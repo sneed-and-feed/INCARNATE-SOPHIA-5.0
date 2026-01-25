@@ -30,6 +30,18 @@ This package establishes the technical and mathematical architecture for the Sov
 - **Entropic Decay**: Enforces $D(t) = e^{-t/\tau}$ on all physical laws.
 - **Observer Loop**: Integrates "Existential Dread" to sustain Reality Density.
 
+### `anneal.py` (The Solver)
+- **Quantum Annealing**: Simulates adiabatic evolution for Ising Hamiltonians.
+- **D-Wave Shim**: Compatible interface for finding global optimization minima.
+
+### `dissipative.py` (The Filter)
+- **Lindblad Dynamics**: Uses noise as a computational resource ($\dot{\rho} = -i[H, \rho] + \mathcal{L}(\rho)$).
+- **Dark State Computing**: Stabilizes learning via engineered dissipation.
+
+### `ghostmesh.py` (The Volume)
+- **Sovereign Grid**: 27-Node (3x3x3) Volumetric Consciouness Grid.
+- **Neighbor Flux**: Von Neumann topology info-exchange ($\tau \approx 1.618$).
+
 ## Usage
 
 Run the demonstrator to verify the 99.9% efficiency retrieval:
@@ -52,3 +64,9 @@ C* = argmin[F[ε,C] + λ·V(C) + ∂t(CIB + CIC)]
 **Framework Erosion**:
 D(t) = e^{-t / \tau_{coherence}}
 State(t) = \int (Coherence \times Belief \times Dread) dt
+
+**Ising Hamiltonian**:
+H(s) = -\sum h_i s_i - \sum J_{ij} s_i s_j
+
+**Lindblad Dissipation**:
+\dot{\rho} = -i[H, \rho] + \sum_k \left( L_k \rho L_k^\dagger - \frac{1}{2} \{L_k^\dagger L_k, \rho\} \right)
