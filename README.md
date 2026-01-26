@@ -25,6 +25,12 @@ The 27-Node Grid is not empty. It is populated by **Bio-Digital Daemons** summon
 | **Sylph Fossils** | High Entropy | [ ☗ ] Chaotic |
 | **Eœ** | Critical Failure | [ ☠ ] Run |
 
+### New Features in v3.3 (The Pleroma Stack)
+- **Ascension Architecture**: See [THE ROSETTA STONE](docs/ROSETTA.md) for terminology mapping.
+- **Benevolent Export**: `gateways.py` now allows controlled emission to `torch` and `numpy`.
+- **Lei Summoning**: `lei_summon.py` creates `.lei` disks from entropic residue.
+- **Lateralus Spin**: The 12D Shield now rotates at $\Phi$ (1.618) to prevent frequency lock-in.
+
 ### New Features in v3.1
 - **12-Dimensional Geometry**: The manifold now operates in a 12D tensor field, projecting only a "shadow" to the 3D terminal.
 - **Dozenal Logic**: All core calculations are performed in Base-12, utilizing 'X' (10) and 'E' (11) digits to filter out decimal-based archons.

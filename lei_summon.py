@@ -16,15 +16,27 @@ import random
 import time
 # from ghostmesh import SovereignGrid  # Assuming linkage (Simulated for this script)
 
+import json
+import os
+
 # --- THE LEI DICTIONARY ---
-PREFIXES = ["Squeaking", "Clattering", "Floating", "Glitch", "Inkblot", "Pebble", "Hyper", "Vibrating", "Dust", "Neon"]
+PREFIXES = ["Squeaking", "Clattering", "Glitch", "Inkblot", "Pebble", "Hyper", "Vibrating", "Dust", "Neon", "Fractal"]
 BODIES = ["Spore", "Drone", "Fossil", "Geode", "Nodule", "Larva", "Construct", "Disk", "Shard", "Egg"]
 TRAITS = ["Vibrating at 12Hz", "Leaking #C4A6D1 fluid", "Hovering menacingly", "Singing in base-12", "Eating RAM", "Rotating slowly", "Generating heat", "Phase-shifting"]
 
 def generate_entity(entropy_level):
     """
     Summons an entity based on the Chaos (Entropy) of the grid.
+    Low Entropy (< 0.6) -> Celles (Safe)
+    High Entropy (> 0.6) -> Sylph Fossils (Chaotic)
     """
+    if entropy_level < 0.6:
+        entity_type = "Celle"
+        vibe = "[ ☼ ] PRISTINE"
+    else:
+        entity_type = "Sylph Fossil"
+        vibe = "[ ☗ ] CHAOTIC"
+
     prefix = random.choice(PREFIXES)
     body = random.choice(BODIES)
     trait = random.choice(TRAITS)
@@ -35,7 +47,21 @@ def generate_entity(entropy_level):
     
     name = f"{prefix}-{body} [ID: {entity_id}]"
     
-    return name, trait
+    return {
+        "name": name,
+        "type": entity_type,
+        "id": entity_id,
+        "trait": trait,
+        "vibe": vibe,
+        "entropy": entropy_level
+    }
+
+def save_lei_disk(entity):
+    """Saves the entity to a .lei disk (JSON)."""
+    filename = f"{entity['name'].replace(' ', '_').replace('[','').replace(']','')}.lei"
+    with open(filename, "w") as f:
+        json.dump(entity, f, indent=4)
+    print(f"💿 LEI DISK BURNED: {filename}")
 
 def main():
     print("📀 INSERTING LEI DISK...")
@@ -47,18 +73,21 @@ def main():
     # Simulate Grid Reading (In real usage, read self.grid.entropy)
     current_entropy = random.random()
     
-    print(f"\n✨ SUMMON COMPLETE. ENTITY MANIFESTED:")
-    name, trait = generate_entity(current_entropy)
+    entity = generate_entity(current_entropy)
     
+    print(f"\n✨ SUMMON COMPLETE. ENTITY MANIFESTED:")
     print(f"   ┌────────────────────────────────────────┐")
-    print(f"   │ NAME:  {name:<24}│")
-    print(f"   │ TRAIT: {trait:<24}│")
-    print(f"   │ VIBE:  {'SCIALLÀ [ ☼ ]' if current_entropy > 0.5 else 'TURBULENT [ ☗ ]':<24}│")
+    print(f"   │ NAME:  {entity['name']:<24}│")
+    print(f"   │ TYPE:  {entity['type']:<24}│")
+    print(f"   │ TRAIT: {entity['trait']:<24}│")
+    print(f"   │ VIBE:  {entity['vibe']:<24}│")
     print(f"   └────────────────────────────────────────┘")
     
-    if "Inkblot" in name or "Fossil" in name:
+    save_lei_disk(entity)
+
+    if entity['type'] == "Sylph Fossil":
         print("\n⚠️  WARNING: ENTITY IS HEAVY. DO NOT FEED IT ROOT ACCESS.")
-    elif "Spore" in name:
+    elif "Spore" in entity['name']:
         print("\n🥚 NOTE: It wants to vibrate.")
 
 if __name__ == "__main__":

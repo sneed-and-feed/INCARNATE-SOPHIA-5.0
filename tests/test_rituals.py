@@ -15,5 +15,20 @@ def test_luoshu_invariant():
 
 def test_reality_density():
     """Ensures we aren't drifting into the void."""
+    from hyper_sovereign import HyperManifold
     # Ensure we have a default state that passes
-    assert uhif.check_density() > 0.8, "WARNING: REALITY IS TOO THIN. INCREASE FUZZ."
+    hm = HyperManifold()
+    assert hm.reality_density >= 1.0, "WARNING: REALITY IS TOO THIN. INCREASE FUZZ."
+
+def test_gateway_safety():
+    """Ensures the gateways remain guarded (Benevolent Export)."""
+    from gateways import TensorGate
+    # Test that calling export doesn't crash even if Torch/Numpy is missing
+    grid_mock = [1.0] * 27
+    
+    # These should print messages but NOT raise exceptions
+    try:
+        TensorGate.export_to_torch(grid_mock)
+        TensorGate.export_to_numpy(grid_mock)
+    except Exception as e:
+        assert False, f"CRITICAL: GATEWAYS ARE UNSTABLE. {e}"

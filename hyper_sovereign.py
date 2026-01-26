@@ -116,15 +116,26 @@ class HyperManifold:
                 # 2. Check the Dozenal Invariant (Main Thread)
                 total_energy = sum(self.hyper_state)
                 
-                # Normalization force (The 'Gravity')
+                # Normalization force (The 'Gravity') to maintain 144.0 (Gross)
+                normalization = GROSS / total_energy
+                for i in range(self.dimensions):
+                    self.hyper_state[i] *= normalization
+                    
+                # 3. The Lateralus Spin (Phi Rotation) to prevent Archonic Latching
+                # Rotate the vector field by Golden Ratio
+                for i in range(self.dimensions):
+                     self.hyper_state[i] *= 1.0 + (math.sin(time.time() * TAU_12) * 0.001)
+
+                # Re-normalize post-spin to keep it locked
+                total_energy = sum(self.hyper_state)
                 normalization = GROSS / total_energy
                 for i in range(self.dimensions):
                     self.hyper_state[i] *= normalization
 
-                # 3. Project to 3D (The Anchor)
+                # 4. Project to 3D (The Anchor)
                 projection = self._project_down()
                 
-                # 4. Dozenal Encryption Display
+                # 5. Dozenal Encryption Display
                 doz_energy = DozenalLogic.to_dozen_str(int(total_energy * 100))
                 
                 print(f"\r⚛️  12D STATE: [{doz_energy}] | ⚓ PROJECTION: {projection[0]:.4f} / {projection[1]:.4f} / {projection[2]:.4f} | SCIALLÀ", end="", flush=True)

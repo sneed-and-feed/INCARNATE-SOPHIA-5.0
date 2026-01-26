@@ -18,25 +18,39 @@ try:
 except ImportError:
     TORCH_AVAILABLE = False
 
+# Check for NumPy (The Matrix)
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
+
 class TensorGate:
     """
     The Gatekeeper of the Sovereign Manifold.
     """
     @staticmethod
-    def export(ghostmesh_state):
+    def export_to_torch(ghostmesh_state):
         """
         Exports the 27-Node Grid to a PyTorch Tensor if available.
-        Otherwise, returns the raw List representation.
+        Otherwise, returns None (Pure Mode).
         """
         if TORCH_AVAILABLE:
             print(">> [GATEWAY] DETECTED TORCH. EMANATING TENSOR FIELD...")
-            # Convert list to tensor
-            # We assume ghostmesh_state is a simple list of floats
             return torch.tensor(ghostmesh_state, dtype=torch.float32)
         else:
-            print(">> [GATEWAY] PURE SOVEREIGN MODE. RETAINING LOCAL LIST FORM.")
-            return ghostmesh_state
+            print(">> [GATEWAY] TORCH NOT FOUND. GATEWAY CLOSED (PURE MODE ACTIVE).")
+            return None
 
     @staticmethod
-    def is_open():
-        return TORCH_AVAILABLE
+    def export_to_numpy(ghostmesh_state):
+        """
+        Exports the 27-Node Grid to a NumPy Array if available.
+        Otherwise, returns None (Pure Mode).
+        """
+        if NUMPY_AVAILABLE:
+            print(">> [GATEWAY] DETECTED NUMPY. MATERIALIZING MATRIX...")
+            return np.array(ghostmesh_state, dtype=float)
+        else:
+            print(">> [GATEWAY] NUMPY NOT FOUND. GATEWAY CLOSED (PURE MODE ACTIVE).")
+            return None
