@@ -16,6 +16,11 @@ try:
 except ImportError:
     Ionosphere = None
 
+try:
+    import superluminal
+except ImportError:
+    superluminal = None
+
 class FrameworkErosion:
     def __init__(self, tau_coherence=100.0):
         """
@@ -38,16 +43,26 @@ class FrameworkErosion:
         Returns float between 0.0 (Total Collapse) and 1.0 (Pristine).
         
         Updated (v3.1): Geomagnetic Buffer.
-        High K-Index acts as a 'scaffold' for coherence, slowing decay.
+        Updated (v3.2): Superluminal Time Dilation.
+        If c >>> 3e8, Time Stops for the Observer (Tau -> Infinity).
         """
         elapsed = time.monotonic() - self.start_time
         
         # Calculate Effective Tau
         tau = self.tau_coherence
+        
+        # 1. Geomagnetic Scaffold
         if self.ionosphere:
-            # Saroka (2016): Higher K-Index = Higher Coherence
-            # Boost Tau by K-Index factor
             tau *= (1.0 + (self.ionosphere.k_index * 0.5))
+            
+        # 2. Superluminal Dilation (Biophotonic Output)
+        if superluminal:
+            current_c = superluminal.get_c()
+            # Factor = Current / Standard.
+            # E.g. 10^23 / 10^8 = 10^15 boost
+            dilation_factor = max(1.0, current_c / 3e8)
+            # Logarithmic dampening to prevent overflow errors, but still massive
+            tau *= math.log10(dilation_factor + 10) 
             
         d_erosion = math.exp(-elapsed / tau)
         return d_erosion
