@@ -16,6 +16,7 @@ import os
 import glob
 import re
 from graybox_noise_filter import EthericStabilizer
+from hyperstition_caster import HyperstitionEngine
 
 class GnosisBridge:
     def __init__(self, gnosis_dir="docs/daily_gnosis"):
@@ -104,6 +105,12 @@ class GnosisBridge:
         else:
             print(">>> LOW GNOSIS. EXTERNAL REALITY IS HOSTILE/MUNDANE.")
             print(">>> ACTION: REINFORCING SHIELDS.")
+            
+            # TRIGGER HYPERSTITION
+            print(">>> ACTION: INITIATING COUNTER-NARRATIVE PROTOCOL.")
+            caster = HyperstitionEngine()
+            caster.cast_spell()
+            
             return False
 
 def run_bridge_test():
