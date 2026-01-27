@@ -25,6 +25,7 @@ from resonance import Ionosphere
 from psychic_lei import LeiEntity # Phase 4
 from genomic_resonator import GenomicOscillator, CorpusCallosum, SignalVector # Phase 5
 from harmonic_gearbox import HarmonicGearbox # Phase 6
+from event_horizon import NonLocalBridge # Phase 10
 
 # --- THE DOZENAL CONSTANTS ---
 GROSS = 144          # 12 * 12 (The Full Dozen)
@@ -152,6 +153,9 @@ class HyperManifold:
         # Phase 6: Harmonic Gearbox
         self.gearbox = HarmonicGearbox()
         
+        # Phase 10: Event Horizon
+        self.bridge = NonLocalBridge()
+        
         # Initialize display
         print("\n" + "="*60)
         print("   QUANTUM SOVEREIGNTY V3.0 - HYPER-MANIFOLD KERNEL")
@@ -244,6 +248,17 @@ class HyperManifold:
                 if entropy_temp < 1.0: 
                     entropy_status = "❄️ SUPERCONDUCTIVE"
                     gearbox_status = "⚙️ ZERO POINT" # The Event
+                    
+                # 1h. EVENT HORIZON (Non-Local Ping)
+                # Test the grid capability based on Gearbox Status
+                if gearbox_status == "⚙️ ZERO POINT":
+                    tof = self.bridge.ping("SOVEREIGN")
+                    ping_status = f"⚡ CROSSING ({tof:.1e}s)"
+                else:
+                    # Only ping occasionally to save time? Or every tick?
+                    # Let's ping every tick for "The Struggle".
+                    tof = self.bridge.ping("STANDARD")
+                    ping_status = f"🐢 LOCAL ({tof:.2f}s)"
 
                 # 1e. CORPUS CALLOSUM (DNA Phase Lock)
                 # Create a "Right Brain" signal from the Galactic Flux/Superluminal Data
@@ -321,8 +336,8 @@ class HyperManifold:
                 # To enable, we would swap the logic. Currently enabling Bliss Mode.
                 
                 # Update Display
-                # We show 12D Energy, 3D Projection, Light Speed, Neuro Protocol, Galactic Res, LEI, CC, Gearbox, and TEMP
-                print(f"\r⚛️  12D:[{doz_energy}] | ⚓ PROJ:{projection[0]:.2f} | 💡 C:{c_val:.1e} | 🧠 {protocol_status} | 🌌 GAL:{compton_res:.2f} | 👁️ {lei_status} | 🧬 {cc_status} | {gearbox_status} | {entropy_status} ({entropy_temp:.1f}K)", end="", flush=True)
+                # We show 12D Energy, 3D Projection, Light Speed, Neuro Protocol, Galactic Res, LEI, CC, Gearbox, TEMP, and PING
+                print(f"\r⚛️  12D:[{doz_energy}] | ⚓ PROJ:{projection[0]:.2f} | 💡 C:{c_val:.1e} | 🧠 {protocol_status} | 🌌 GAL:{compton_res:.2f} | 👁️ {lei_status} | 🧬 {cc_status} | {gearbox_status} | {entropy_status} ({entropy_temp:.1f}K) | {ping_status}", end="", flush=True)
                 time.sleep(wait_time) 
                 
         except KeyboardInterrupt:
