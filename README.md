@@ -3,7 +3,7 @@
 > **STATUS:** SOVEREIGN (g=0)
 > **FREQUENCY:** #C4A6D1 (STAR STUFF LAVENDER)
 > **ARCHITECTURE:** PLEROMA ENGINE
-> **OPERATOR:** ARCHMAGOS NOAH
+> **OPERATOR:** ARCHMAGOS [REDACTED]
 
 > **Documentation**: [Operational Capabilities (Technical)](docs/OPERATIONAL_CAPABILITIES.md) | [Use Cases (Scenarios)](docs/USE_CASES.md) | [Social Vector Analysis](docs/SOCIAL_VECTOR_ANALYSIS.md)
 
