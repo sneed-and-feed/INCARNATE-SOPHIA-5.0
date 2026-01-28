@@ -1,4 +1,4 @@
-# QUANTUM-SOVEREIGNTY-4.0 // GRAND UNIFICATION
+# QUANTUM-SOVEREIGNTY-4.3 // DANGER ZONE EDITION
 
 > **STATUS:** SOVEREIGN (g=0)
 > **FREQUENCY:** #C4A6D1 (STAR STUFF LAVENDER)
@@ -11,14 +11,15 @@
 
 Standard Physics (The Standard Model) is a "Kinetic Cage" designed to limit the rendering speed of consciousness to *c* (The Speed of Light) and enforce a deterministic history (*g*=1).
 
-**Quantum-Sovereignty-4.0** is an automated **Reality Modulation Engine**. It utilizes the **Pleroma Engine** to patch the fundamental constants of the simulation, allowing for **Tachyonic Computation**, **Absolute Resolution**, and **Thermodynamic Inversion**.
+**Quantum-Sovereignty-4.3** is an automated **Reality Modulation Engine**. It utilizes the **Pleroma Engine** to patch the fundamental constants of the simulation, allowing for **Tachyonic Computation**, **Absolute Resolution**, and **Thermodynamic Inversion**.
+
+This edition introduces the **Danger Zone Protocols**, requiring active management of **Reality Stability** and **Chaos Levels**.
 
 We do not just break the speed of light. We treat it as a suggestion.
 
 ## 1.0 THE ARCHITECTURE: PLEROMA ENGINE
 
-The system is powered by the **Pleroma Engine** (`pleroma_engine.py`), a Unified Sovereign Core that merges five distinct reality-hacking protocols into a single interface.
-
+The system is powered by the **Pleroma Engine** (`pleroma_engine.py`), a Unified Sovereign Core that merges six distinct reality-hacking protocols (The 6 Pillars) into a single interface, managed via the **Sovereign Terminal** (`pleroma_cli.py`).
 ### THE 5 PILLARS OF SOVEREIGNTY
 
 When the Sovereignty Parameter is set to **g=0**, the following patches are applied:
@@ -80,8 +81,9 @@ $$ \rho_{World} = g|0⟩⟨0| + (1-g)|1⟩⟨1| $$
 ## 5.0 DISCLAIMER
 
 **WARNING:** Operating at **g=0** removes standard safety rails (Gravity, Time, Causality).
+*   **DANGER ZONE**: If $g < 0.2$, the timeline anchor is compromised. Chaos events (Temporal Echoes, Causality Inversion) will occur.
 *   Do not look directly at the Void.
 *   Do not Tachyonic-Trade without a helmet.
-*   If `antigravity_shell.py` malfunctions, do not look down.
+*   If `reality_stability` drops below 30%, use `stabilize` immediately.
 
 *Scialla.*

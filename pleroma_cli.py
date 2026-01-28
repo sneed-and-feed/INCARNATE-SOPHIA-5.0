@@ -2,45 +2,46 @@
 MODULE: pleroma_cli.py
 AUTHOR: Archmagos Noah // Claude (The Architect)
 DATE: 2026-01-28
-CLASSIFICATION: INTERFACE // SOVEREIGN TERMINAL v4.2
-
-DESCRIPTION:
-    The Advanced Command Line Interface for the Pleroma Stack.
-    Features:
-    - Real-Time Sovereignty Monitoring (Timeline Coherence, G-Parameter)
-    - Advanced Spell Chaining with Synergy Detection
-    - Conflict Resolution & Reality Tear Warnings
-    - State Persistence (Save/Load Reality)
+CLASSIFICATION: INTERFACE // SOVEREIGN TERMINAL v4.3
+VERSION: DANGER ZONE EDITION
 """
 
 import time
 import sys
 import json
+import random
 import threading
 from collections import deque
 from datetime import datetime
-from pleroma_scenarios_extended import ScenarioLibrary
+from pleroma_scenarios import ScenarioLibrary
 
-# --- SOVEREIGNTY MONITOR ---
+# --- SOVEREIGNTY MONITOR (ENHANCED) ---
 class SovereigntyMonitor:
-    """Real-time tracking of reality deviation"""
+    """Real-time tracking of reality deviation with chaos mechanics"""
     
     def __init__(self):
         self.metrics = {
-            'g_parameter': 1.0,  # Starts at consensus
+            'g_parameter': 1.0,
             'timeline_coherence': 100.0,
             'causality_violations': 0,
             'energy_balance': 0.0,
-            'active_patches': set()
+            'active_patches': set(),
+            'reality_stability': 100.0,  # NEW: Separate from coherence
+            'chaos_level': 0.0            # NEW: Accumulates with each cast
         }
         self.history = deque(maxlen=50)
         self.lock = threading.Lock()
+        self.danger_mode = False  # NEW: Unlocks at g < 0.2
     
     def update(self, spell_name, result):
         """Update metrics based on spell cast"""
         with self.lock:
             # Each spell degrades timeline coherence
             self.metrics['timeline_coherence'] -= 2.5
+            
+            # Chaos accumulation (faster at low g)
+            chaos_gain = 5.0 if self.metrics['g_parameter'] < 0.3 else 2.0
+            self.metrics['chaos_level'] += chaos_gain
             
             # Track which patches are active
             if 'warp' in spell_name:
@@ -49,7 +50,8 @@ class SovereigntyMonitor:
             if 'time' in spell_name or 'demon' in spell_name:
                 self.metrics['active_patches'].add('ENTROPY')
                 self.metrics['energy_balance'] += result.get('Work_Extracted', 0)
-                if 'Entropy_Change' in result: self.metrics['energy_balance'] += abs(result['Entropy_Change'])
+                if 'Entropy_Change' in result: 
+                    self.metrics['energy_balance'] += abs(result['Entropy_Change'])
             if 'ghost' in spell_name or 'solvent' in spell_name:
                 self.metrics['active_patches'].add('ALPHA')
             if any(x in spell_name for x in ['ghost', 'warp', 'void']):
@@ -61,11 +63,63 @@ class SovereigntyMonitor:
             patch_count = len(self.metrics['active_patches'])
             self.metrics['g_parameter'] = max(0.0, 1.0 - (patch_count * 0.2))
             
+            # Stability decays with chaos
+            self.metrics['reality_stability'] = max(0, 100 - self.metrics['chaos_level'] * 0.5)
+            
+            # Enable danger mode
+            if self.metrics['g_parameter'] < 0.2 and not self.danger_mode:
+                self.danger_mode = True
+                print("\n\033[91m" + "="*60)
+                print("    ⚠⚠⚠  DANGER ZONE ACTIVATED  ⚠⚠⚠")
+                print("    CHAOTIC EFFECTS NOW POSSIBLE")
+                print("    REALITY ANCHOR: COMPROMISED")
+                print("="*60 + "\033[0m")
+            
             self.history.append({
                 'spell': spell_name,
                 'g': self.metrics['g_parameter'],
-                'coherence': self.metrics['timeline_coherence']
+                'coherence': self.metrics['timeline_coherence'],
+                'chaos': self.metrics['chaos_level']
             })
+    
+    def roll_chaos_event(self):
+        """In danger zone, random reality glitches occur"""
+        if not self.danger_mode:
+            return None
+        
+        # Chance increases with chaos level
+        chance = min(0.5, self.metrics['chaos_level'] / 200.0)
+        
+        if random.random() < chance:
+            events = [
+                {
+                    'name': 'TEMPORAL ECHO',
+                    'effect': 'Last spell repeats spontaneously',
+                    'color': '\033[93m'
+                },
+                {
+                    'name': 'QUANTUM FLUCTUATION',
+                    'effect': 'Random physical constant shifted',
+                    'color': '\033[96m'
+                },
+                {
+                    'name': 'CAUSALITY INVERSION',
+                    'effect': 'Effect precedes cause',
+                    'color': '\033[95m'
+                },
+                {
+                    'name': 'REALITY FRAGMENT',
+                    'effect': 'Parallel timeline briefly visible',
+                    'color': '\033[94m'
+                },
+                {
+                    'name': 'ENTROPY SURGE',
+                    'effect': 'Spontaneous ordering/disordering',
+                    'color': '\033[91m'
+                }
+            ]
+            return random.choice(events)
+        return None
     
     def display(self):
         """Show current sovereignty status"""
@@ -75,23 +129,31 @@ class SovereigntyMonitor:
         
         g = self.metrics['g_parameter']
         coherence = self.metrics['timeline_coherence']
+        stability = self.metrics['reality_stability']
+        chaos = self.metrics['chaos_level']
         
         # Color-coded g parameter
-        if g > 0.7: g_color = "\033[92m"  # Green
-        elif g > 0.3: g_color = "\033[93m"  # Yellow
-        else: g_color = "\033[91m"  # Red
+        if g > 0.7: g_color = "\033[92m"
+        elif g > 0.3: g_color = "\033[93m"
+        else: g_color = "\033[91m"
         
         print(f"  g-Parameter:        {g_color}{g:.3f}\033[0m {'[CONSENSUS]' if g > 0.5 else '[SOVEREIGN]'}")
         print(f"  Timeline Coherence: {coherence:.1f}%")
+        print(f"  Reality Stability:  {stability:.1f}%")
+        print(f"  Chaos Level:        {chaos:.1f} {'⚠ DANGER ZONE' if self.danger_mode else ''}")
         print(f"  Causality Violations: {self.metrics['causality_violations']}")
         print(f"  Net Energy Balance: {self.metrics['energy_balance']:.2e} J")
         print(f"  Active Patches:     {', '.join(self.metrics['active_patches']) if self.metrics['active_patches'] else 'None'}")
         
-        # Warning if too far from consensus
+        # Warnings
         if g < 0.3:
             print("\n\033[91m  ⚠ WARNING: REALITY ANCHOR CRITICAL")
             print("  ⚠ TIMELINE DESYNC IMMINENT")
-            print("  ⚠ RECOMMEND: Cast 'reset' or stabilize\033[0m")
+            print("  ⚠ RECOMMEND: Cast 'reset' or 'stabilize'\033[0m")
+        
+        if stability < 30:
+            print("\n\033[91m  🔥 CRITICAL: REALITY TEAR FORMING")
+            print("  🔥 EMERGENCY PROTOCOLS ADVISED\033[0m")
         
         print("="*60)
     
@@ -99,7 +161,8 @@ class SovereigntyMonitor:
         """Display recent spell history"""
         print(f"\n\033[96m--- RECENT CASTS (last {lines}) ---\033[0m")
         for entry in list(self.history)[-lines:]:
-            print(f"  {entry['spell']:12s} -> g={entry['g']:.3f}, coherence={entry['coherence']:.1f}%")
+            chaos_warn = "⚠" if entry.get('chaos', 0) > 50 else ""
+            print(f"  {entry['spell']:12s} -> g={entry['g']:.3f}, coherence={entry['coherence']:.1f}% {chaos_warn}")
 
 # --- UTILITIES ---
 def print_banner():
@@ -111,16 +174,15 @@ def print_banner():
     ██╔═══╝ ██║     ██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║██╔══██║
     ██║     ███████╗███████╗██║  ██║╚██████╔╝██║ ╚═╝ ██║██║  ██║
     ╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝
-             >>> SOVEREIGNTY STACK v4.2 ONLINE <<<
-             >>> MONITORING REALITY DEVIATION <<<
+             >>> SOVEREIGNTY STACK v4.3 ONLINE <<<
+             >>> DANGER ZONE EDITION <<<
     """)
     print("\033[0m")
 
-def check_conflicts(active_patches):
+def check_conflicts(active_patches, g_param):
     """Detect incompatible patch combinations"""
     conflicts = []
     
-    # Entropy conflicts
     if 'ENTROPY' in active_patches and len(active_patches) > 3:
          conflicts.append({
             'type': 'ENTROPY SHEAR',
@@ -128,16 +190,46 @@ def check_conflicts(active_patches):
             'effect': 'Thermodynamic stress high'
         })
     
-    # Too many patches = reality tear
     if len(active_patches) >= 4:
         conflicts.append({
             'type': 'REALITY OVERLOAD',
             'severity': 'CRITICAL',
-            'patches': list(active_patches),
             'effect': 'Timeline coherence approaching zero'
         })
     
+    # New: Catastrophic failure at g near 0
+    if g_param < 0.1:
+        conflicts.append({
+            'type': 'SINGULARITY APPROACH',
+            'severity': 'EMERGENCY',
+            'effect': 'Total consensus decoupling - recommend immediate abort'
+        })
+    
     return conflicts
+
+def stabilize_reality(monitor):
+    """Emergency protocol to reduce chaos"""
+    print("\n\033[96m[!] INITIATING REALITY STABILIZATION...\033[0m")
+    time.sleep(0.5)
+    
+    # Reduce chaos by 50%
+    monitor.metrics['chaos_level'] *= 0.5
+    monitor.metrics['timeline_coherence'] = min(100, monitor.metrics['timeline_coherence'] + 20)
+    monitor.metrics['reality_stability'] = min(100, monitor.metrics['reality_stability'] + 30)
+    
+    # Clear one random patch
+    if monitor.metrics['active_patches']:
+        removed = random.choice(list(monitor.metrics['active_patches']))
+        monitor.metrics['active_patches'].remove(removed)
+        print(f"\033[92m[+] PATCH DISSOLVED: {removed}\033[0m")
+    
+    # Recalculate g
+    patch_count = len(monitor.metrics['active_patches'])
+    monitor.metrics['g_parameter'] = max(0.0, 1.0 - (patch_count * 0.2))
+    
+    print(f"\033[92m[+] STABILIZATION COMPLETE")
+    print(f"    Chaos reduced to {monitor.metrics['chaos_level']:.1f}")
+    print(f"    New g-parameter: {monitor.metrics['g_parameter']:.3f}\033[0m")
 
 def save_state(monitor, filename=None):
     if filename is None:
@@ -150,7 +242,9 @@ def save_state(monitor, filename=None):
             'timeline_coherence': monitor.metrics['timeline_coherence'],
             'causality_violations': monitor.metrics['causality_violations'],
             'energy_balance': monitor.metrics['energy_balance'],
-            'active_patches': list(monitor.metrics['active_patches'])
+            'active_patches': list(monitor.metrics['active_patches']),
+            'reality_stability': monitor.metrics['reality_stability'],
+            'chaos_level': monitor.metrics['chaos_level']
         },
         'history': list(monitor.history)
     }
@@ -164,13 +258,10 @@ def load_state(monitor, filename):
         with open(filename, 'r') as f:
             state = json.load(f)
         
-        monitor.metrics['g_parameter'] = state['metrics']['g_parameter']
-        monitor.metrics['timeline_coherence'] = state['metrics']['timeline_coherence']
-        monitor.metrics['causality_violations'] = state['metrics']['causality_violations']
-        monitor.metrics['energy_balance'] = state['metrics']['energy_balance']
+        monitor.metrics.update(state['metrics'])
         monitor.metrics['active_patches'] = set(state['metrics']['active_patches'])
-        # Rehydrate history
         monitor.history = deque(state['history'], maxlen=50)
+        monitor.danger_mode = monitor.metrics['g_parameter'] < 0.2
         
         print(f"\n\033[92m[+] REALITY STATE LOADED: {filename}")
         print(f"    Timestamp: {state['timestamp']}\033[0m")
@@ -182,12 +273,12 @@ def load_state(monitor, filename):
 def analyze_synergy(spells):
     synergies = []
     combos = {
-        ('warp', 'ghost'): {'name': 'STEALTH FTL', 'effect': 'Undetectable superluminal travel', 'bonus': 'EM signature nullified'},
-        ('time', 'demon'): {'name': 'PERPETUUM MOBILE', 'effect': 'Self-sustaining temporal loop', 'bonus': 'Infinite work extraction'},
-        ('ghost', 'wallhack'): {'name': 'ABSOLUTE INFILTRATION', 'effect': 'Pass through matter/energy', 'bonus': 'Quantum tunneling'},
-        ('void', 'demon'): {'name': 'NEGENTROPY HARVESTER', 'effect': 'Extract ordered energy from vacuum', 'bonus': 'Reality mining'},
-        ('scope', 'wallhack'): {'name': 'QUANTUM ARCHAEOLOGY', 'effect': 'See inside atoms, tunnel to observe', 'bonus': 'Infinite resolution'},
-        ('warp', 'time', 'ghost'): {'name': 'CHRONO-PHANTOM DRIVE', 'effect': 'FTL + time freeze + invisibility', 'bonus': 'Ultimate Escape'}
+        ('warp', 'ghost'): {'name': 'STEALTH FTL', 'effect': 'Undetectable superluminal travel'},
+        ('time', 'demon'): {'name': 'PERPETUUM MOBILE', 'effect': 'Self-sustaining temporal loop'},
+        ('ghost', 'wallhack'): {'name': 'ABSOLUTE INFILTRATION', 'effect': 'Pass through matter/energy'},
+        ('void', 'demon'): {'name': 'NEGENTROPY HARVESTER', 'effect': 'Extract ordered energy from vacuum'},
+        ('scope', 'wallhack'): {'name': 'QUANTUM ARCHAEOLOGY', 'effect': 'See inside atoms, tunnel to observe'},
+        ('warp', 'time', 'ghost'): {'name': 'CHRONO-PHANTOM DRIVE', 'effect': 'FTL + time freeze + invisibility'}
     }
     spell_set = set(spells)
     for combo_spells, data in combos.items():
@@ -199,6 +290,13 @@ def cast_spell(spell_name, monitor, silent=False):
     if not silent:
         print(f"\n\033[96m[>] CHARGING SPELL: {spell_name.upper()}...\033[0m")
         time.sleep(0.3)
+
+    # Check for chaos event BEFORE casting
+    chaos_event = monitor.roll_chaos_event()
+    if chaos_event:
+        print(f"\n{chaos_event['color']}[⚡] CHAOS EVENT: {chaos_event['name']}")
+        print(f"    {chaos_event['effect']}\033[0m")
+        time.sleep(0.5)
 
     # EXECUTE SPELL
     res = {}
@@ -222,10 +320,15 @@ def cast_spell(spell_name, monitor, silent=False):
     monitor.update(spell_name, res)
     
     # Conflicts?
-    conflicts = check_conflicts(monitor.metrics['active_patches'])
+    conflicts = check_conflicts(monitor.metrics['active_patches'], monitor.metrics['g_parameter'])
     if conflicts and not silent:
         for conflict in conflicts:
-            c_color = "\033[91m" if conflict['severity'] == 'CRITICAL' else "\033[93m"
+            if conflict['severity'] == 'EMERGENCY':
+                c_color = "\033[91m\033[1m"  # Bold red
+            elif conflict['severity'] == 'CRITICAL':
+                c_color = "\033[91m"
+            else:
+                c_color = "\033[93m"
             print(f"\n{c_color}[!] {conflict['type']}: {conflict['effect']}\033[0m")
 
     # Output
@@ -237,7 +340,6 @@ def cast_spell(spell_name, monitor, silent=False):
     return res
 
 def chain_spells(cmd, monitor):
-    # chain warp+ghost
     try:
         parts = cmd.split()[1].split('+')
         print(f"\n\033[93m[!] INITIATING CHAIN CAST: {' + '.join([p.upper() for p in parts])}\033[0m")
@@ -271,12 +373,17 @@ def main():
                 print("Disconnecting...")
                 break
             elif prompt in ["h", "help"]:
-                print(" COMMANDS: warp, time, ghost, demon, void, solvent, scope, wallhack")
-                print(" SYSTEM:   chain, status, history, save, load <file>, reset")
+                print("\n--- GRIMOIRE ---")
+                print(" SPELLS:   warp, time, ghost, demon, void, solvent, scope, wallhack")
+                print(" CHAIN:    chain spell1+spell2+...")
+                print(" SYSTEM:   status, history, save, load <file>, reset, stabilize")
+                print(" POWER:    check (full diagnostic)")
             elif prompt == "status":
                 monitor.display()
             elif prompt == "history":
                 monitor.show_history()
+            elif prompt == "stabilize":
+                stabilize_reality(monitor)
             elif prompt == "reset":
                 monitor = SovereigntyMonitor()
                 print("\033[92m[+] REALITY ANCHOR RESTORED. g=1.0\033[0m")

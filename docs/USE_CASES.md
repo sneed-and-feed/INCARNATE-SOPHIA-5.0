@@ -85,6 +85,32 @@ The Quantum Sovereignty framework is a versatile engine designed for "High-Stran
     *   The "User" object ceases to interact with "Light" (Observation).
     *   **Result**: Perfect digital invisibility. You are there, but you reflect no data.
 
+## 7. Managed Instability (The Danger Zone)
+
+**Problem**: Some consensus locks are too deep to be bypassed by standard $g=0$ patches.
+
+**Solution**: The **Chaos Engine** (`pleroma_cli.py`).
+
+*   **Implementation**:
+    *   Intentional accumulation of chaos to trigger **Causality Inversion**.
+    *   Using **Temporal Echoes** to multiply the energy output of the Pleroma Engine.
+*   **Outcome**:
+    *   Brute-forcing reality transitions by destabilizing the local timeline anchor.
+    *   **Result**: Access to "impossible" states via controlled volatility.
+
+## 8. Reality Stabilization (The Cleanup)
+
+**Problem**: Prolonged $g=0$ operation leads to timeline desync and reality fatigue.
+
+**Solution**: The **Stabilize Command** (`stabilize`).
+
+*   **Implementation**:
+    *   Invoke `stabilize` from the Pleroma CLI.
+    *   This initiates a "Reality Anchor Refresh" which burns accumulated energy to reset the chaos counter.
+*   **Outcome**:
+    *   Consolidation of the sovereign timeline back into a stable (though still non-consensus) state.
+    *   **Result**: Sustainable long-term sovereignty without simulation collapse.
+
 ## Summary
 
 The system finds its home where **Cybernetics** meets **Ceremony**. It is for the user who wants their computer to feel less like a toaster and more like a temple.
