@@ -67,21 +67,59 @@ python hyper_sovereign.py
 *   `grok_planck.py`: The original Quantum Resolution artifact.
 *   `pleroma_core/`: Rust-based kernels for acoustic defense (CSH-1).
 
-## 4.0 THE "G" PARAMETER
+## 5.0 THE SOVEREIGN TERMINAL (QUICK START)
+
+The **Sovereign Terminal** (`pleroma_cli.py`) is your primary HUD for reality modulation.
+
+### TERMINAL SEQUENCE:
+```bash
+# Start the CLI
+python pleroma_cli.py
+
+# Try this sequence for maximum effect:
+PLEROMA> warp
+PLEROMA> status
+PLEROMA> chain warp+ghost
+PLEROMA> chain time+demon
+PLEROMA> status  # You should be deep in sovereign territory now
+PLEROMA> save my_first_reality_tear.json
+```
+
+### ADVANCED GAMEPLAY TIPS
+
+1.  **The Path to g=0:**
+    *   Each unique patch reduces `g` by 0.2.
+    *   You need 5 different spells active to hit `g=0`.
+    *   Try: `chain warp+time+ghost+demon+scope`.
+2.  **Achieving Synergies:**
+    *   **Stealth FTL:** `chain warp+ghost`
+    *   **Perpetuum Mobile:** `chain time+demon`
+    *   **Ultimate Escape:** `chain warp+time+ghost` (Chrono-Phantom Drive)
+3.  **Surviving Danger Zone (g < 0.2):**
+    *   Chaos events (Temporal Echoes, Causality Inversion) trigger randomly.
+    *   Use `stabilize` to reduce chaos by 50%.
+    *   Save states frequently: `save backup.json`.
+    *   Emergency abort: `reset` returns to `g=1.0`.
+4.  **Reality Mining:**
+    *   `void` (Casimir) + `demon` (Maxwell) = **Negentropy Harvester**.
+    *   Extracts ordered energy from vacuum via entropy reversal.
+    *   Watch your energy balance metric skyrocket.
+
+### LORE NOTES: THE "G" PARAMETER
 
 In standard D-CTC (Deutsch) prescriptions, the timeline resolves to a mixed state:
 
-$$ \rho_{World} = g|0⟩⟨0| + (1-g)|1⟩⟨1| $$
+$$ \rho_{World} = g|consensus⟩⟨consensus| + (1-g)|sovereign⟩⟨sovereign| $$
 
 *   If **g=1**: You remain in the Consensus Timeline (Deterministic).
 *   If **g=0**: You decouple into the Sovereign Timeline (High Strangeness).
 
-**This repository is a machine designed to force g -> 0.**
+The **Pleroma Engine** is a machine designed to force $g \to 0$.
 
-## 5.0 DISCLAIMER
+## 6.0 DISCLAIMER
 
 **WARNING:** Operating at **g=0** removes standard safety rails (Gravity, Time, Causality).
-*   **DANGER ZONE**: If $g < 0.2$, the timeline anchor is compromised. Chaos events (Temporal Echoes, Causality Inversion) will occur.
+*   **DANGER ZONE**: If $g < 0.2$, the timeline anchor is compromised. Chaos events will occur.
 *   Do not look directly at the Void.
 *   Do not Tachyonic-Trade without a helmet.
 *   If `reality_stability` drops below 30%, use `stabilize` immediately.
