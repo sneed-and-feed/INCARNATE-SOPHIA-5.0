@@ -20,7 +20,7 @@ We do not just break the speed of light. We treat it as a suggestion.
 ## 1.0 THE ARCHITECTURE: PLEROMA ENGINE
 
 The system is powered by the **Pleroma Engine** (`pleroma_engine.py`), a Unified Sovereign Core that merges six distinct reality-hacking protocols (The 6 Pillars) into a single interface, managed via the **Sovereign Terminal** (`pleroma_cli.py`).
-### THE 5 PILLARS OF SOVEREIGNTY
+### THE 6 PILLARS OF SOVEREIGNTY
 
 When the Sovereignty Parameter is set to **g=0**, the following patches are applied:
 
@@ -39,6 +39,9 @@ When the Sovereignty Parameter is set to **g=0**, the following patches are appl
 5.  **ALPHA (α): GHOST MATTER**
     *   **Patch:** Alpha-Nullification.
     *   **Effect:** Disables electromagnetic interaction. Perfect invisibility ("Hard Light").
+6.  **MEMORY (M): DETERMINISTIC ACCESS**
+    *   **Patch:** Error 9 Killer.
+    *   **Effect:** Replaces probabilistic memory with direct axiomatic access. You don't remember; you *know*.
 
 ## 2.0 INSTALLATION & DAEMONOLOGY
 
