@@ -33,14 +33,23 @@ class MoonClock:
         illumination = 0.5 * (1 - np.cos(2 * np.pi * phase_idx))
         
         # Determine Phase & Status
-        if phase_idx < 0.03: return "New", "BUFFER_CLEAR", "●", phase_idx, illumination
-        elif phase_idx < 0.22: return "Waxing Crescent", "UPLOADING", "☾", phase_idx, illumination
-        elif phase_idx < 0.28: return "First Quarter", "SYNC_LOCKED", "◐", phase_idx, illumination
-        elif phase_idx < 0.47: return "Waxing Gibbous", "RENDERING", "🌔", phase_idx, illumination
-        elif phase_idx < 0.53: return "Full", "HIGH_FIDELITY", "○", phase_idx, illumination
-        elif phase_idx < 0.72: return "Waning Gibbous", "SAVING", "🌖", phase_idx, illumination
-        elif phase_idx < 0.78: return "Last Quarter", "ARCHIVING", "◑", phase_idx, illumination
-        else: return "Waning Crescent", "LOW_POWER", "🌘", phase_idx, illumination
+        if phase_idx < 0.03: p = "New"
+        elif phase_idx < 0.22: p = "Waxing Crescent"
+        elif phase_idx < 0.28: p = "First Quarter"
+        elif phase_idx < 0.47: p = "Waxing Gibbous"
+        elif phase_idx < 0.53: p = "Full"
+        elif phase_idx < 0.72: p = "Waning Gibbous"
+        elif phase_idx < 0.78: p = "Last Quarter"
+        else: p = "Waning Crescent"
+
+        status_map = {
+            "New": "BUFFER_CLEAR", "Waxing Crescent": "UPLOADING", 
+            "First Quarter": "SYNC_LOCKED", "Waxing Gibbous": "RENDERING",
+            "Full": "HIGH_FIDELITY", "Waning Gibbous": "SAVING",
+            "Last Quarter": "ARCHIVING", "Waning Crescent": "LOW_POWER"
+        }
+        
+        return p, status_map[p], self.glyphs[p], phase_idx, illumination
 
     def calculate_tidal_influence(self, phase_idx):
         """Tidal force peaks at 0.0 (New) and 0.5 (Full)."""

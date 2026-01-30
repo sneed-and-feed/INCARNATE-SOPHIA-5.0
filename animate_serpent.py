@@ -27,8 +27,17 @@ except ImportError as e:
     sys.exit(1)
 
 # Set font for better character support on Windows
-plt.rcParams['font.family'] = 'Segoe UI Symbol'
-plt.rcParams['font.sans-serif'] = ['Segoe UI Symbol', 'DejaVu Sans', 'Arial Unicode MS']
+# Set font for better character support
+# Segoe UI Historic is the definitive Windows font for Cuneiform/Sumerian.
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Segoe UI Historic', 'Segoe UI Symbol', 'DejaVu Sans', 'Arial Unicode MS']
+
+# Suppress glyph warnings to keep the terminal 'Code Brutalist' clean
+import logging
+logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
+
 
 def animate_serpent(size=64, interval=1, show_metrics=True):
     """
