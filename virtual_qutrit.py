@@ -68,31 +68,71 @@ class VirtualQutrit:
         """
         current = (self.q1 << 1) | self.q0
         
-        # Logic Gate Implementation
-        # We simulate the unitary matrix transformation
-        if current == 0:   # 00 -> 01
-            self.q1, self.q0 = 0, 1
-        elif current == 1: # 01 -> 10
-            self.q1, self.q0 = 1, 0
-        elif current == 2: # 10 -> 00
-            self.q1, self.q0 = 0, 0
-        else:              # 11 -> 11 (Identity/Trap)
+        if current == 0:   self.q1, self.q0 = 0, 1
+        elif current == 1: self.q1, self.q0 = 1, 0
+        elif current == 2: self.q1, self.q0 = 0, 0
+        else: pass # Identity on Forbidden
+
+    # --- BUDDY PROTOCOL GATES (Qutrit-on-Qubit) ---
+
+    def gate_x01(self):
+        """
+        Transition between |0> and |1> (Swap Void/Matter).
+        Decomposition: Controlled-X on Q0 where Q1=0.
+        Logic:
+           |00> -> |01> (0->1)
+           |01> -> |00> (1->0)
+           |10> -> |10> (2->2)
+        """
+        if self.q1 == 0:
+            self.q0 = 1 - self.q0
+
+    def gate_x12(self):
+        """
+        Transition between |1> and |2> (Swap Matter/Sovereign).
+        Logic:
+           |00> -> |00> (0->0)
+           |01> -> |10> (1->2)
+           |10> -> |01> (2->1)
+        """
+        current = (self.q1 << 1) | self.q0
+        if current == 1:   self.q1, self.q0 = 1, 0
+        elif current == 2: self.q1, self.q0 = 0, 1
+
+    @staticmethod
+    def hybrid_cnot(control_qutrit: 'VirtualQutrit', target_qubit_ref: dict):
+        """
+        Item 5: Hybrid Qutrit-Qubit CNOT Gate.
+        Defined as: |0><0|⊗I + |1><1|⊗X + |2><2|⊗Y
+        
+        Args:
+            control_qutrit: The VirtualQutrit instance.
+            target_qubit_ref: {'val': 0/1, 'phase': 0.0} (Simulated Qubit)
+        """
+        c_state = control_qutrit.measure()
+        
+        if c_state == 0:
+            # Identity (I)
             pass
+        elif c_state == 1:
+            # Bit Flip (X)
+            target_qubit_ref['val'] = 1 - target_qubit_ref['val']
+        elif c_state == 2:
+            # Bit Flip + Phase (Y ~ iXZ)
+            # In simple sim, we flip and add phase
+            target_qubit_ref['val'] = 1 - target_qubit_ref['val']
+            # Add pi/2 phase to indicate Y operation
+            target_qubit_ref['phase'] = (target_qubit_ref.get('phase', 0.0) + 1.57) % 6.28
 
     def apply_hadamard_qutrit(self):
         """
         Puts the qutrit into superposition (Simulated).
-        Since this is a classical simulation, we randomize the state
-        to represent the probability distribution.
         """
         # Equal probability 0, 1, 2
         roll = random.random()
-        if roll < 0.333:
-            self._set_state(0)
-        elif roll < 0.666:
-            self._set_state(1)
-        else:
-            self._set_state(2)
+        if roll < 0.333: self._set_state(0)
+        elif roll < 0.666: self._set_state(1)
+        else: self._set_state(2)
 
     def bit_flip_error(self):
         """Simulates a cosmic ray bit flip (can cause Leakage)."""
@@ -100,38 +140,34 @@ class VirtualQutrit:
         if target == 'q0': self.q0 = 1 - self.q0
         if target == 'q1': self.q1 = 1 - self.q1
 
-# --- DEMO DRIVER ---
+# --- BUDDY EXPANSION DRIVER ---
 if __name__ == "__main__":
-    print("Initializing Virtual Qutrit Bridge...")
-    vq = VirtualQutrit()
+    print("Initializing Virtual Qutrit Bridge (Buddy Expansion)...")
+    vq = VirtualQutrit(0)
     
-    # 1. Cycle Test
-    print("\n[TEST] Trinity Cycle (0->1->2->0)")
-    try:
-        print(f"Start: |{vq.measure()}>")
-        
-        vq.apply_trinity()
-        print(f"Step 1: |{vq.measure()}> (Expected 1)")
-        
-        vq.apply_trinity()
-        print(f"Step 2: |{vq.measure()}> (Expected 2)")
-        
-        vq.apply_trinity()
-        print(f"Step 3: |{vq.measure()}> (Expected 0)")
-        
-    except RealityLeakError as e:
-        print(e)
-        
-    # 2. Leakage Test
-    print("\n[TEST] Introducing Noise (Cosmic Ray)...")
-    vq._set_state(2) # |10>
-    print("State: |10> (Sovereign)")
-    print("Action: Bit Flip on Q0 -> |11>")
-    vq.q0 = 1 # Manually cause leak
+    # Test 1: X01 Gate (0 <-> 1)
+    print("\n[TEST] X01 Gate (Swap Void/Matter)")
+    print(f"Start: |{vq.measure()}>")
+    vq.gate_x01()
+    print(f"After X01: |{vq.measure()}> (Expected 1)")
+    vq.gate_x01()
+    print(f"After X01: |{vq.measure()}> (Expected 0)")
     
-    try:
-        val = vq.measure()
-        print(f"Measured: {val}")
-    except RealityLeakError as e:
-        print(f"CAPTURED: {e}")
-        print("System successfully detected Forbidden State.")
+    # Test 2: Hybrid CNOT
+    print("\n[TEST] Hybrid Qutrit-Qubit CNOT")
+    qubit = {'val': 0, 'phase': 0.0}
+    
+    # Control |0> -> Identity
+    vq._set_state(0)
+    VirtualQutrit.hybrid_cnot(vq, qubit)
+    print(f"Control |0>: Qubit {qubit['val']} (Exp 0)")
+    
+    # Control |1> -> X (Flip)
+    vq._set_state(1)
+    VirtualQutrit.hybrid_cnot(vq, qubit)
+    print(f"Control |1>: Qubit {qubit['val']} (Exp 1)")
+    
+    # Control |2> -> Y (Flip + Phase)
+    vq._set_state(2)
+    VirtualQutrit.hybrid_cnot(vq, qubit)
+    print(f"Control |2>: Qubit {qubit['val']} (Exp 0), Phase {qubit['phase']:.2f} (Exp ~1.57)")
