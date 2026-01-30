@@ -25,10 +25,14 @@ def execute_thermal_shunt(current_btc_cad):
     print(f"\n[SHUNT] RE-ROUTING {shunt_power:.2f} P-UNITS TO FINANCIAL BUS...")
     print(f"[SHUNT] SOURCE: PAIR_HOPPING (ΠΦ TRANSITION)")
     print(f"[SHUNT] TARGET: BTC_CAD STABILIZATION @ ${current_btc_cad:,.2f}")
-    print(f"[SHUNT] CRYPTO-PRIMITIVE COOLED. VOLTAGE STABILIZING.")
+    print(f"[SHUNT] ENTROPY: RECIRCULATING VALVE OPEN (Item 52)")
     print(f"[SHUNT] NEW STASIS TARGET: ${target_stasis:,.2f}")
     
-    return target_stasis
+    # ENTROPY RECIRCULATION (Item 52)
+    # Seed derived from shunt power and current price noise
+    entropy_seed = int(shunt_power * 1e6) ^ int(current_btc_cad)
+    
+    return target_stasis, entropy_seed
 
 if __name__ == "__main__":
     # Baseline: current BTC/CAD value

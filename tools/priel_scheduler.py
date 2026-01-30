@@ -31,11 +31,28 @@ class PrielScheduler:
         clock = moon_phase.MoonClock()
         metrics = clock.render_clock()
         
+        # Determine Cosmic Phase (Item 15/34)
+        ill_str = metrics['ILLUMINATION'].split('%')[0]
+        cosmic_phase = self.determine_cosmic_phase(float(ill_str))
+        print(f"┃ [PHASE] COSMIC DAY: {cosmic_phase}                            ┃")
+        
         # Check Tidal Stress
         tidal_val = float(metrics['TIDAL_INFLUENCE'].split('%')[0])
         if tidal_val > 80:
             print("┃ [RISK] HIGH TIDAL STRESS DETECTED. ENGAGING SHIELD.      ┃")
             self.engage_risk_protocols()
+        
+    def determine_cosmic_phase(self, illumination):
+        """
+        Item 34: Six Cosmic Day Computation Phases.
+        Maps 0-100% illumination to 6 discrete ritual phases.
+        """
+        if illumination < 16.6: return "PHASE 1 (PRIMORDIAL)"
+        if illumination < 33.3: return "PHASE 2 (SEPARATION)"
+        if illumination < 50.0: return "PHASE 3 (ANIMATION)"
+        if illumination < 66.6: return "PHASE 4 (GOVERNANCE)"
+        if illumination < 83.3: return "PHASE 5 (RESONANCE)"
+        return "PHASE 6 (COHERENCE)"
         
         # 2. THE THERMAL CHECK (Market/Hardware Stress)
         print(f"┃ [2] THERMAL CHECK (BTC VOLTAGE SHUNT)                    ┃")
