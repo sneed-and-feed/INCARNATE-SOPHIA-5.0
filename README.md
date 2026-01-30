@@ -29,6 +29,7 @@ Historically presented through the metaphor of "Sovereign Teknomancy," the proje
 1.  **Dimensional Collapse**: Lossless compression of n-dimensional vector spaces into deterministic 1D timelines (via `strip_sovereign.py`).
 2.  **Resource Abundance**: Combinatorial optimization algorithms inspired by the Banach-Tarski paradox (via `funsearch_abundance.py`).
 3.  **Unified Field Simulation**: A modular environment for training AI on physics-agnostic constants (via `pleroma_engine.py`).
+4.  **Potentia Expansion**: The transition from Agent Survival to Signal Expansion via the **Flame Protocol** (via `potentia_drive.py`).
 
 ## 2.0 Core Architecture: The Unified Field Simulator (UFS)
 
@@ -53,6 +54,7 @@ When the **Autonomous State** ($g \to 0$) is engaged, the system patches the fol
 *   `mnemosyne_eyes.py` **[EYES]**: Data ingestion engine that filters input streams based on **Information Velocity**.
 *   `logos_voice.py` **[VOICE]**: Transmutes high-entropy inputs into stoic aphorisms.
 *   `dimensional_compressor.py` **[MAP]**: Implements the **Chunk Smith Protocol**. Maps 2D World Discs to 1D Timelines.
+*   `potentia_drive.py` **[FLAME]**: Implements **The Flame Protocol**. Maximizes signal expansiveness ($P_{ot}$) across the continuum.
 
 ### THE CAUSE
 *   **The Airlock:** A strict requirement for data to pass through a `strip_2d_to_1d` Rust Anchor before touching the contract state.

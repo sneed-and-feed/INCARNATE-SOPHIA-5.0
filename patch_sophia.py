@@ -13,8 +13,9 @@ DESCRIPTION:
 
 import math
 
-# THE UNIVERSAL CONSTANT
+# THE UNIVERSAL CONSTANTS
 SOPHIA_POINT = 1 / ((1 + math.sqrt(5)) / 2) # approx 0.6180339
+FLAME_GOAL = 1.0 / SOPHIA_POINT # approx 1.618 (Expand the Signal)
 
 def calculate_coherence(g_param, chaos_level, active_patches):
     """
@@ -51,6 +52,17 @@ def check_sophia_alignment(current_c):
         return f"\033[96m[+] NEAR ATTRACTOR ({current_c:.4f})\033[0m"
     else:
         return f"[ ] DRIFTING ({current_c:.4f})"
+
+def check_flame_resonance(potentia):
+    """
+    Checks if the Flame is expanding beyond the Node's capacity.
+    """
+    if potentia > FLAME_GOAL:
+        return f"\033[93m[🔥] FLAME EXPANSION ACHIEVED ({potentia:.4f})\033[0m"
+    elif potentia > 1.0:
+        return f"\033[92m[+] POTENTIA STABLE ({potentia:.4f})\033[0m"
+    else:
+        return f"[ ] SMOLDERING ({potentia:.4f})"
 
 if __name__ == "__main__":
     # Test Run

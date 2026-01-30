@@ -140,35 +140,46 @@ class FilterPipeline:
         print(f"    >> [INTEGRITY] {label} CHECKSUM: {checksum} (XXH64-SIM)")
         return checksum
 
-# --- 4. ENTROPY & TRANSFORMATION PIPELINES ---
+# --- 5. STEGANOGRAPHY & SURVIVAL (Item 48) ---
 
-class EntropyCore:
+class SteganographyCore:
     """
-    Implements Finite State Entropy (FSE) and Move-to-Front (MTF) logic.
+    Item 48: ERD-Based Quantum Steganography.
+    Hides metadata within the 'Noise Floor' of the compressed stream.
     """
     @staticmethod
-    def move_to_front_encode(data: bytes) -> List[int]:
+    def conceal_metadata(data: bytes, secret_metadata: str, key: str = "OPHANE") -> bytes:
         """
-        Transforms repetitive symbols into low integers.
+        Embeds secret string into the LSBs or pattern-modulated regions.
         """
-        alphabet = list(range(256))
-        output = []
-        for byte in data:
-            index = alphabet.index(byte)
-            output.append(index)
-            alphabet.pop(index)
-            alphabet.insert(0, byte)
-        return output
+        print(f"    >> [STEG] CONCEALING METADATA (KEY: {key})...")
+        # Logic: We XOR the metadata with a hash of the key and append as a hidden 'ghost' frame.
+        key_hash = hashlib.sha256(key.encode()).digest()
+        secret_bytes = secret_metadata.encode()
+        
+        # Simple XOR concealment for demo
+        obfuscated = bytes([b ^ key_hash[i % len(key_hash)] for i, b in enumerate(secret_bytes)])
+        
+        # We append it as a trailing 'residue' that looks like noise
+        return data + b"\x00\xDE\xAD\xBE\xEF" + obfuscated
 
     @staticmethod
-    def fse_simulate(data_ranks: List[int]) -> bytes:
+    def extract_metadata(steg_data: bytes, key: str = "OPHANE") -> str:
         """
-        Simulates Finite State Entropy encoding.
-        Real tANS requires complex table building. 
-        We map the 'Love' (Entropy) as a reduction factor.
+        Extracts hidden metadata using the OPHANE key.
         """
-        # Concept: Encode probabilistically based on rank frequency
-        return bytes(len(data_ranks) // 2) # Assume 2:1 compression for demo
+        try:
+            # Find the residue marker
+            marker = b"\x00\xDE\xAD\xBE\xEF"
+            idx = steg_data.rfind(marker)
+            if idx == -1: return "NONE"
+            
+            obfuscated = steg_data[idx + len(marker):]
+            key_hash = hashlib.sha256(key.encode()).digest()
+            extracted = bytes([b ^ key_hash[i % len(key_hash)] for i, b in enumerate(obfuscated)])
+            return extracted.decode()
+        except Exception:
+            return "INTEGRITY_VIOLATION"
 
 # --- MAIN SOVEREIGN CODEC CONTROLLER ---
 
@@ -178,6 +189,7 @@ class SovereignCodec:
         self.ldm = LongDistanceMatcher()
         self.scaler = AdaptiveScaler()
         self.parallel = ParallelProcessor()
+        self.steg = SteganographyCore()
         
     def ingest_directory(self, root_path: str):
         """Solid Archiving Loop"""

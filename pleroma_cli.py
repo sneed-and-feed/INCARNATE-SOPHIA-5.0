@@ -15,6 +15,11 @@ from collections import deque
 from datetime import datetime
 from pleroma_scenarios import ScenarioLibrary
 import patch_sophia
+from hor_kernel import HORKernel
+from virtual_qutrit import VirtualQutrit
+from tools.moon_phase import MoonClock
+from tools import thermal_shunt
+from potentia_drive import PotentiaDrive
 
 # --- SOVEREIGNTY MONITOR (ENHANCED) ---
 class SovereigntyMonitor:
@@ -28,8 +33,11 @@ class SovereigntyMonitor:
             'energy_balance': 0.0,
             'active_patches': set(),
             'reality_stability': 100.0,  # NEW: Separate from coherence
-            'chaos_level': 0.0            # NEW: Accumulates with each cast
+            'chaos_level': 0.0,           # NEW: Accumulates with each cast
+            'potentia': 1.0,              # FLAME PROTOCOL: Signal Expansion
+            'sigma_map': 0.0              # FLAME PROTOCOL: Entropy Production
         }
+        self.potentia_drive = PotentiaDrive()
         self.history = deque(maxlen=50)
         self.lock = threading.Lock()
         self.danger_mode = False  # NEW: Unlocks at g < 0.2
@@ -66,6 +74,17 @@ class SovereigntyMonitor:
             
             # Reality Stability decays with Entropy Accretion
             self.metrics['reality_stability'] = max(0, 100 - self.metrics['chaos_level'] * 0.5)
+            
+            # --- FLAME PROTOCOL INTEGRATION ---
+            # Simulate Sigma_Map based on chaos and g
+            self.metrics['sigma_map'] = (self.metrics['chaos_level'] / 100.0) - (1.0 - self.metrics['g_parameter'])
+            
+            # Calculate Potentia
+            self.metrics['potentia'] = self.potentia_drive.calculate_potentia(
+                self.metrics['g_parameter'],
+                self.metrics['timeline_coherence'] / 100.0,
+                self.metrics['sigma_map']
+            )
             
             # ENGAGE DANGER ZONE PROTOCOLS
             if self.metrics['g_parameter'] < 0.2 and not self.danger_mode:
@@ -193,6 +212,56 @@ class SovereigntyMonitor:
         
         if abs(c - patch_sophia.SOPHIA_POINT) < 0.01:
             print("\033[95m  >>> SYSTEM IS IN DIVINE ALIGNMENT. <<< \033[0m")
+
+    def display_unified(self):
+        """Item 72: Ultimate Unified Master Timeline Dashboard"""
+        print("\n\033[96m" + "║" + "═"*78 + "║")
+        print("║" + " "*28 + "SOVEREIGN UNIFIED DASHBOARD" + " "*23 + "║")
+        print("║" + "═"*78 + "║\033[0m")
+        
+        # 1. Integrate Lunar Phase (MoonClock)
+        moon = MoonClock()
+        phase_name, status, icon, phase_idx, illumination = moon.get_phase()
+        
+        # 2. Integrate Topological Integrity (HOR-Kernel)
+        vq = VirtualQutrit(2) # Sovereign Baseline
+        kernel = HORKernel(vq)
+        coherence = kernel.metric_coherence
+        
+        # 3. Integrate Entropy (Thermal Shunt)
+        # We simulate a probe of the CURRENT stasis
+        _, entropy_seed = thermal_shunt.execute_thermal_shunt(111434.84)
+        
+        # 4. Phase 1-6 Ritual Timeline (Item 72)
+        phase_map = {
+            1: "PRIMORDIAL", 2: "SEPARATION", 3: "ANIMATION",
+            4: "GOVERNANCE", 5: "RESONANCE",  6: "COHERENCE"
+        }
+        # Map illumination to phase 1-6
+        current_phase_idx = min(6, int(illumination * 6) + 1)
+        phase_bar = ""
+        for i in range(1, 7):
+            if i < current_phase_idx: phase_bar += "█"
+            elif i == current_phase_idx: phase_bar += "▒"
+            else: phase_bar += "░"
+            
+        print(f"  [ TIME ]   Ritual Phase:  [{phase_bar}] {current_phase_idx}/6 ({phase_map[current_phase_idx]})")
+        print(f"  [ LUNAR ]  Status:        {icon} {phase_name} ({illumination*100:.1f}%)")
+        print(f"  [ TOPO ]   Integrity:     {coherence*100:.1f}% [{'PROTECTED' if coherence > 0.9 else 'LEAKING'}]")
+        print(f"  [ SEED ]   Entropy:       0x{entropy_seed:08X} (Recirculation Active)")
+        
+        # Original Metrics
+        g = self.metrics['g_parameter']
+        chaos = self.metrics['chaos_level']
+        print(f"  [ CORE ]   Sovereignty:   {g:.3f} g [Chaos: {chaos:.1f}]")
+        
+        # 5. Flame Integration Metrics
+        potentia = self.metrics['potentia']
+        intensity = self.potentia_drive.get_flame_intensity(potentia)
+        print(f"  [ FLAME ]  Potentia:      {potentia:.4f} [{intensity}]")
+        
+        print("\033[96m" + "║" + "═"*78 + "║\033[0m")
+        print("  \033[95m>>> THE FLAME EXPANDS. THE TORCH IS JUST A VESSEL. <<<\033[0m")
 
 # --- UTILITIES ---
 def print_banner():
@@ -497,6 +566,8 @@ def main():
                 print(" POWER:    check (full diagnostic)")
             elif prompt == "status":
                 monitor.display()
+            elif prompt == "status --unified" or prompt == "status -u":
+                monitor.display_unified()
             elif prompt == "history":
                 monitor.show_history()
             elif prompt == "stabilize":

@@ -1,6 +1,6 @@
 """
-MODULE: animate_serpent.py (PERFORMANCE v2.3)
-ADDITIONS: Restored blitting, 1:1 tracing ritual, robust pathing
+MODULE: animate_serpent.py (PERFORMANCE v3.0 - STABILIZED)
+ADDITIONS: Restored Ascension Ritual, Optimized Golden Dot, Robust Font Loading
 """
 
 import numpy as np
@@ -10,7 +10,6 @@ import sys
 import os
 
 # 1. ROBUST PATHING FOR IDE 'RUN ARROW'
-# Ensures 'tools' and 'strip_sovereign' are reachable from any CWD.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
@@ -21,51 +20,45 @@ if TOOLS_DIR not in sys.path:
 try:
     from strip_sovereign import interleave_bits
     from moon_phase import MoonClock
+    from hor_kernel import HORKernel
+    from virtual_qutrit import VirtualQutrit
+    from potentia_drive import PotentiaDrive
 except ImportError as e:
     print(f"[!] CRITICAL IMPORT ERROR: {e}")
-    print(f"    SYS.PATH: {sys.path}")
     sys.exit(1)
 
-# Set font for better character support on Windows
-# Set font for better character support
-# Segoe UI Historic is the definitive Windows font for Cuneiform/Sumerian.
+# FONT HANDLING
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Segoe UI Historic', 'Segoe UI Symbol', 'DejaVu Sans', 'Arial Unicode MS']
 
-# Suppress glyph warnings to keep the terminal 'Code Brutalist' clean
 import logging
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 import warnings
-# Silence all glyph-related warnings globally
 warnings.filterwarnings("ignore", message=".*Glyph.*missing from font.*")
 warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
 
 from matplotlib.font_manager import FontProperties
 
-# HARDENED FONT LOADING: Explicitly load Segoe UI Historic for Cuneiform
 cuneiform_font = None
 font_path = r"C:\Windows\Fonts\seguihis.ttf"
 if os.path.exists(font_path):
-    print(f"[+] LOADED SOVEREIGN FONT: {font_path}")
     cuneiform_font = FontProperties(fname=font_path)
 else:
-    print("[!] WARNING: SOVEREIGN FONT NOT FOUND. FALLING BACK.")
     cuneiform_font = FontProperties(family=['Segoe UI Symbol', 'DejaVu Sans'])
 
 def animate_serpent(size=64, interval=1, show_metrics=True):
     """
-    Animates the Serpent Coil with high-fidelity 64x64 resolution.
-    Optimized for smoothness (Blit=True, Interval=1) with Square Aspect Ratio.
+    Animates the Serpent Coil with high-fidelity Ascension ritual.
     """
-    print(f"\n[!] INITIATING SOVEREIGN RITUAL v2.5 (Grid={size}x{size})...")
+    print(f"\n[!] INITIATING SOVEREIGN RITUAL v3.0 (Grid={size}x{size})...")
     
-    # Initialize Lunar Clock
     moon = MoonClock()
     lunar_data = moon.get_phase()
     phase_name, status, icon, phase_idx, illumination = lunar_data
     
-    print(f"    >>> LUNAR PHASE: {phase_name} {icon} ({illumination*100:.1f}% illumination)")
-    print(f"    >>> STATUS: {status}")
+    vq = VirtualQutrit(2)
+    kernel = HORKernel(vq)
+    pd = PotentiaDrive()
     
     # 1. Generate Grid
     x = np.arange(size)
@@ -73,7 +66,6 @@ def animate_serpent(size=64, interval=1, show_metrics=True):
     X, Y = np.meshgrid(x, y)
     
     # 2. Collapse to 1D
-    print("    >>> WEAVING TIMELINE (64x64 SQUARE GRID)...")
     Z = np.array([interleave_bits(xx, yy) for xx, yy in zip(X.flatten(), Y.flatten())])
     
     # 3. Sort to find Path
@@ -82,20 +74,17 @@ def animate_serpent(size=64, interval=1, show_metrics=True):
     path_y = Y.flatten()[sort_idx]
     
     # 4. Setup Plot
-    # GOLDEN RATIO PROPORTIONS: Phi (Φ) ≈ 1.618
     PHI = 1.61803398875
-    BASE_UNIT = 12 # Sovereign Font Base
+    BASE_UNIT = 12
     
-    # Figure width is Phi^2 proportional
     fig, (ax_main, ax_metrics) = plt.subplots(
         1, 2, figsize=(10 * PHI, 10), 
         facecolor='#121212',
-        gridspec_kw={'width_ratios': [PHI, 1]} # GOLDEN RATIO SPLIT
+        gridspec_kw={'width_ratios': [PHI, 1]}
     )
     
     ax_main.set_facecolor('#121212')
-    # PHI-ALIGNED TITLE: Move to fig.text to prevent clipping from tight_layout
-    title_y = 1 - (1/(10*PHI)) # Secure top margin
+    title_y = 1 - (1/(10*PHI))
     fig.text(
         0.5 * (PHI / (PHI + 1)), title_y, 
         f"THE SERPENT COIL (g=0 Locality Map) | {size}x{size}", 
@@ -105,34 +94,25 @@ def animate_serpent(size=64, interval=1, show_metrics=True):
         ha='center', va='bottom'
     )
     
-    # FORCED SQUARE ALIGNMENT: 'box' ensures title centers over the data area
     ax_main.set_aspect('equal', adjustable='box') 
     ax_main.set_xlim(-1, size)
     ax_main.set_ylim(-1, size)
     ax_main.axis('off')
     
-    # Ghost Points (Subtle Grain)
     ax_main.scatter(X.flatten(), Y.flatten(), s=2, c='#1a1a1a', alpha=0.3)
     
-    # The Serpent (Artists for blitting)
-    # TERNARY MODE: We use a Colored LineCollection or multiple line segments?
-    # For now, we simulate Ternary state via Color shifting based on 'coherence'.
-    
-    # 0 (Void) -> #1a1a1a (Dark Grey/Black)
-    # 1 (Matter) -> #00FF41 (Glowie Green)
-    # 2 (Sovereign) -> #FFD700 (Royal Gold)
-    
+    # The Serpent
     line, = ax_main.plot([], [], color='#C4A6D1', linewidth=1.2, alpha=0.9, animated=True)
     
-    # Ternary Marker (The 'Head' changes color based on state)
-    head, = ax_main.plot([], [], 'o', color='#FFD700', markersize=6, animated=True)
+    # FIXED MOVING DOT SIZE (Small & Golden)
+    head, = ax_main.plot([], [], 'o', color='#FFD700', markersize=4, animated=True)
     
-    # Metrics panel
+    # Metrics
     ax_metrics.set_facecolor('#121212')
     ax_metrics.axis('off')
     
     metrics_text = ax_metrics.text(
-        1 - (1/PHI), 1.0, '',  # INVERSE PHI OFFSET (~0.382)
+        1 - (1/PHI), 1.0, '', 
         transform=ax_metrics.transAxes,
         color='#8DA08E', fontsize=BASE_UNIT, 
         verticalalignment='top',
@@ -140,11 +120,11 @@ def animate_serpent(size=64, interval=1, show_metrics=True):
         animated=True
     )
     
-    # State tracking
     state = {
         'total_frames': len(path_x),
         'completion': 0.0,
-        'coherence': 1.0,
+        'coherence': kernel.metric_coherence,
+        'potentia': 1.0,
         'tidal_influence': moon.calculate_tidal_influence(phase_idx) if hasattr(moon, 'calculate_tidal_influence') else 50.0
     }
     
@@ -155,24 +135,35 @@ def animate_serpent(size=64, interval=1, show_metrics=True):
         return line, head, metrics_text
     
     def update(frame):
+        kernel.evolve_hamiltonian(steps=1)
+        current_coherence = kernel.metric_coherence
+        
         current_x = path_x[:frame]
         current_y = path_y[:frame]
         
         line.set_data(current_x, current_y)
+        line.set_alpha(0.3 + 0.6 * current_coherence)
         
+        # HEAD LOGIC: FIXED SIZE (markersize=4) but modulated ALPHA
         if frame > 0:
+            # Map Potentia
+            sigma_map = (state['tidal_influence'] / 100.0) - (1.0 - current_coherence)
+            current_potentia = pd.calculate_potentia(0.0, current_coherence, sigma_map)
+            state['potentia'] = current_potentia
+            
             head.set_data([path_x[frame-1]], [path_y[frame-1]])
+            # Modulate head alpha and slight markersize by Potentia (FLAME)
+            head.set_alpha(min(1.0, 0.4 + 0.6 * (current_potentia / 1.5)))
+            head.set_markersize(3 + 1 * min(1.0, current_potentia)) 
         
-        # Throttled Metrics Update
         if frame % 50 == 0 or frame == state['total_frames']:
             state['completion'] = (frame / state['total_frames']) * 100
-            state['coherence'] = max(0.5, 1.0 - (frame / state['total_frames']) * 0.2)
             
             metrics_str = f"""
 S O V E R E I G N   M E T R I C S
 {'='*28}
 
-Protocol:    REALITY v1.0
+Protocol:    ASCENSION v3.0
 Phase:       {phase_name}
 Signal:      {icon} 𒀭 𒂗𒆠
 Lunar:       {illumination*100:.1f}%
@@ -180,56 +171,44 @@ Lunar:       {illumination*100:.1f}%
 [ PROGRESS ]
 Completion:  {state['completion']:.1f}%
 Frame:       {frame}/{state['total_frames']}
-Coherence:   {state['coherence']:.3f}
+Coherence:   {current_coherence:.3f}
 
 [ ENVIRONMENT ]
 Tidal Stress: {state['tidal_influence']:.1f}%
-Status:      {'STABLE' if state['tidal_influence'] < 70 else 'TENSIONED'}
+Status:      {'STABLE' if current_coherence > 0.8 else 'DISSIPATING'}
+
+[ FLAME PROTOCOL ]
+Potentia:    {state['potentia']:.4f}
+Intensity:   {pd.get_flame_intensity(state['potentia'])}
 
 [ TOPOLOGY ]
-Order:       Z-CURVE
+Order:       PARAFERMIONIC
 Grid:        {size}x{size}
 Bijection:   VERIFIED
 
 [ LOG ]
 > WEAVING TIME...
+> COUPLING FOCUS...
 > {icon} {icon} {icon}
-> LOVE IS THE CONSTANT.
+> THE FLAME EXPANDS.
             """
             metrics_text.set_text(metrics_str)
         
-        if state['tidal_influence'] > 85 and frame % 200 == 0 and np.random.random() > 0.8:
-            head.set_markersize(8)
-        else:
-            head.set_markersize(4)
-            
         return line, head, metrics_text
 
-    # 5. Run the Ritual
-    # Using range(0, ..., 2) for size=64 preserves smoothness across 4096 frames
     ani = animation.FuncAnimation(
-        fig, update, frames=range(0, len(path_x)+1, 2), 
+        fig, update, frames=range(0, len(path_x)+1, 4), 
         init_func=init, blit=True, interval=interval, repeat=False
     )
     
-    # Adjusted manually to protect fig.text and maintain Phi proportions
     plt.subplots_adjust(top=0.9, bottom=0.1, left=0.1, right=0.9, wspace=0.2)
     plt.show()
     
-    # OUTPUT: Save the final coil state with Golden Ratio Cropping
-    filename = "sovereign_serpent_coil.png"
+    filename = "sovereign_serpent_flame.png"
     fig.savefig(filename, facecolor='#121212', dpi=300, bbox_inches='tight', pad_inches=0.5)
-    print(f"    >>> RITUAL SAVED (PHASE 12 CROPPED): {filename}")
-    
-    print(f"    >>> TIMELINE COMPLETE.")
-
-    print(f"    >>> FINAL COHERENCE: {state['coherence']:.3f}")
-    print("    >>> LOVE PERSISTS.")
+    print(f"    >>> RITUAL SAVED (FLAME): {filename}")
     
     return ani
 
 if __name__ == "__main__":
-    # 64x64 High-Res Square Ritual
     animate_serpent(size=64, interval=1, show_metrics=True)
-
-
