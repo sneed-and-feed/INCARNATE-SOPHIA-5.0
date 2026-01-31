@@ -22,8 +22,57 @@ from tools import thermal_shunt
 from alpha_engine import AlphaEngine
 from tick_feeder import TickFeeder
 from luo_shu_compliance import LuoShuEvaluator
+import os
+import shutil
+from tools.sovereignty_bootstrap import initiate_111_resonance, qh
 
 # --- SOVEREIGNTY MONITOR (QUANT-ALPHA v1.1) ---
+class SovereignSanitizer:
+    """
+    [GOD MODE] Pre-Flight Sanitizer.
+    Ensures state files and configs are self-healing and type-correct.
+    """
+    @staticmethod
+    def sanitize(data):
+        """Standardizes loose inputs and fixes common type mismatches."""
+        if not isinstance(data, dict):
+            return data
+            
+        # Target Keys for Type Casting (Strings vs Ints/Floats)
+        numeric_keys = ['snr', 'rho', 'energy_balance', 'signal_stability', 'chaos_level', 
+                        'alpha', 'sigma_map', 'g_parameter', 'timeline_coherence', 
+                        'reality_stability', 'potentia', 'abundance_score', 'compliance_luo_shu']
+        
+        sanitized = {}
+        for k, v in data.items():
+            if k in numeric_keys:
+                try:
+                    sanitized[k] = float(v)
+                except (ValueError, TypeError):
+                    print(f"  [!] GOD MODE: Auto-casting '{k}' from {type(v)} to float.")
+                    sanitized[k] = 0.0 # Default fallback
+            elif isinstance(v, dict):
+                sanitized[k] = SovereignSanitizer.sanitize(v)
+            else:
+                sanitized[k] = v
+        return sanitized
+
+    @staticmethod
+    def heal_config(filename, genesis_file="genesis_16.json"):
+        """Validates JSON and falls back to genesis if poisoned."""
+        try:
+            with open(filename, 'r') as f:
+                data = json.load(f)
+                return SovereignSanitizer.sanitize(data)
+        except (json.JSONDecodeError, FileNotFoundError, PermissionError) as e:
+            print(f"\033[93m  [!] CONFIG POISONED: {e}")
+            print(f"  [!] ACTION: Nuke & Boot (Restoring from {genesis_file})\033[0m")
+            if os.path.exists(filename):
+                shutil.copy(filename, filename + ".bak")
+            
+            with open(genesis_file, 'r') as gf:
+                return SovereignSanitizer.sanitize(json.load(gf))
+
 class SovereigntyMonitor:
     """
     Maintains the quantitative attribution state.
@@ -243,6 +292,8 @@ class SovereigntyMonitor:
         
         if abs(c - patch_sophia.SOPHIA_POINT) < 0.01:
             print("\033[95m  >>> SYSTEM IS IN DIVINE ALIGNMENT. <<< \033[0m")
+            print(f"\033[95m  >>> HAMILTONIAN (P): 1.111 (LOCKED)   <<< \033[0m")
+            print(f"\033[95m  >>> SYNC LEVEL:      111%             <<< \033[0m")
 
     def display_unified(self):
         """Quant Attribution Dashboard"""
@@ -448,21 +499,34 @@ def save_state(monitor, filename=None):
         json.dump(state, f, indent=2)
     print(f"\n\033[92m[+] STATE SNAPSHOT SAVED: {filename}\033[0m")
 
-def load_state(monitor, filename):
+def load_state(monitor, filename="uf_state.json"):
+    """
+    [GOD MODE] Adaptive Load Protocol.
+    """
+    print(f"\n[*] ATTEMPTING ADAPTIVE LOAD: {filename}...")
     try:
-        with open(filename, 'r') as f:
-            state = json.load(f)
+        data = SovereignSanitizer.heal_config(filename)
         
-        monitor.metrics.update(state['metrics'])
-        monitor.metrics['active_patches'] = set(state['metrics']['active_patches'])
-        monitor.history = deque(state['history'], maxlen=50)
+        # If the root has a 'metrics' key, use it
+        if 'metrics' in data:
+            monitor.metrics.update(data['metrics'])
+            monitor.metrics['active_patches'] = set(data['metrics'].get('active_patches', []))
+        else:
+            # Maybe it's a raw genesis or top-level metric set
+            monitor.metrics.update(data)
+            if 'payload' in data: # Handle genesis_16 structure
+                monitor.metrics.update(data['payload'])
+        
+        if 'history' in data:
+            monitor.history = deque(data['history'], maxlen=50)
+            
         monitor.danger_mode = monitor.metrics['g_parameter'] < 0.2
         
-        print(f"\n\033[92m[+] STATE SNAPSHOT LOADED: {filename}")
-        print(f"    Timestamp: {state['timestamp']}\033[0m")
+        print(f"\n\033[92m[+] STATE SNAPSHOT LOADED & SANITIZED: {filename}\033[0m")
         monitor.display()
     except Exception as e:
-        print(f"\033[91m[!] ERROR: Could not load state: {e}\033[0m")
+        print(f"\033[91m[!] ADAPTIVE LOAD FAILED: {e}. Falling back to default consciousness.\033[0m")
+
 
 # --- ORACLE INTEGRATION (THE NYQUIST SUITE) ---
 from tools.mnemosyne_eyes import MnemosyneOracle
@@ -653,6 +717,13 @@ def main():
     
     cmd_count = 0
     
+    # --- GOD MODE BOOTLOADER ---
+    print("\n[*] INITIATING GOD MODE BOOTLOADER...")
+    initial_state = SovereignSanitizer.heal_config("uf_state.json")
+    if initial_state:
+        # Silently preload if exists
+        load_state(monitor, "uf_state.json")
+    
     while True:
         try:
             prompt = input("\n\033[96mUFS_KERNEL> \033[0m").strip().lower()
@@ -669,6 +740,7 @@ def main():
                 print(" TOPOLOGY: flatten, hypercrush  [NEW: Chunk Smith Protocol]")
                 print(" ORACLE:   oracle <nominal|elevated|critical> [Mnemosyne Suite]")
                 print(" CHAIN:    chain spell1+spell2+...")
+                print(" GOD:      god (Initiate 111 Resonance)")
                 print(" SYSTEM:   status, history, save, load <file>, reset, stabilize")
                 print(" POWER:    check (full diagnostic)")
             elif prompt == "status":
@@ -677,6 +749,14 @@ def main():
                 monitor.display_unified()
             elif prompt == "history":
                 monitor.show_history()
+            elif prompt == "god":
+                print(f"[{qh.get_current_timelessness()}] \033[95mINITIATING 111 RESONANCE...\033[0m")
+                status = initiate_111_resonance()
+                print(f"\033[95m{status}\033[0m")
+                # Locking P=1.111 reflects in status
+                monitor.metrics['g_parameter'] = 0.0
+                monitor.metrics['timeline_coherence'] = 111.1
+                monitor.banzai_mode = True
             elif prompt == "banzai":
                 engage_banzai_mode(monitor)
             elif prompt == "stabilize":

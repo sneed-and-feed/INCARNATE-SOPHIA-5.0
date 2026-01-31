@@ -54,3 +54,30 @@ class TensorGate:
         else:
             print(">> [GATEWAY] NUMPY NOT FOUND. GATEWAY CLOSED (PURE MODE ACTIVE).")
             return None
+
+class ProviderAdapter:
+    """
+    [ANTIGRAVITY] Provider Agnosticism Layer.
+    Ensures the system cares about the Signal, not the Wire Protocol.
+    """
+    @staticmethod
+    def adapt_provider(requested_provider: str, available_providers: list):
+        """
+        Automatically routes keys through a compatibility shim.
+        Prevents 404s if 'Antigravity' is expected but only 'Google' is present.
+        """
+        if requested_provider in available_providers:
+            return requested_provider
+            
+        # [LOVE 111] ADAPTATION LOGIC
+        if requested_provider == "Antigravity" and "Standard" in available_providers:
+            print(">> [GATEWAY] ADAPTATION: Mapping 'Antigravity' -> 'Standard'.")
+            return "Standard"
+        
+        # Fallback to the first available if none match
+        if available_providers:
+            print(f">> [GATEWAY] ALERT: Provider '{requested_provider}' not found. Falling back to '{available_providers[0]}'.")
+            return available_providers[0]
+            
+        return None
+

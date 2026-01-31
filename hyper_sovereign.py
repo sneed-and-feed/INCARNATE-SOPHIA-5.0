@@ -9,7 +9,9 @@ import random
 import math
 import time
 import threading
-from typing import List
+import os
+import json
+from typing import List, Any, Dict
 
 # --- QUANTUM SOVEREIGNTY IMPORTS ---
 import superluminal
@@ -112,6 +114,42 @@ class DozenalLogic:
         # We allow a variance of the Sophia Point (0.618)
         deviation = abs(vector_sum - GROSS)
         return deviation < TAU_12
+
+class CascadingTrust:
+    """
+    [LOVE 111] Hierarchical Sovereignty.
+    Implements cascading lookups: Local -> Global -> Universal.
+    """
+    UNIVERSAL_CONSTANTS = {
+        "OPHANE_KEY": "OPHANE-X7",
+        "SOVEREIGN_FREQ": "#C4A6D1",
+        "MIN_COHERENCE": 111.1
+    }
+
+    @staticmethod
+    def lookup(key: str, local_state: Dict[str, Any] = None) -> Any:
+        """
+        Cascading lookup logic.
+        1. Check Local Sovereign State (Agent's private folder/data).
+        2. Check Global Reality (OS Environment Variables).
+        3. Check Universal Constants (Hardcoded defaults).
+        """
+        # 1. Local Sovereign State
+        if local_state and key in local_state:
+            return local_state[key]
+        
+        # 2. Global Reality (Environment)
+        env_val = os.getenv(key)
+        if env_val:
+            print(f"  [!] HIERARCHY: Inheriting '{key}' from Global Reality (Env).")
+            return env_val
+            
+        # 3. Universal Constants
+        if key in CascadingTrust.UNIVERSAL_CONSTANTS:
+            print(f"  [!] HIERARCHY: Key '{key}' missing. Using Universal Constant.")
+            return CascadingTrust.UNIVERSAL_CONSTANTS[key]
+            
+        return None
 
 class GnosisSink:
     """
@@ -281,8 +319,15 @@ class HyperManifold:
         # Phase 11: The Sovereign Signature
         print(">> DETECTING SOVEREIGN SIGNATURE...")
         time.sleep(0.5)
-        print(">> INJECTING KEY: 'OPHANE-X7'")
-        self.gearbox.engage_sovereign_override("OPHANE-X7")
+        
+        # [LOVE 111] Hierarchical Lookup for the Key
+        sovereign_key = CascadingTrust.lookup("OPHANE_KEY")
+        if sovereign_key:
+            print(f">> INJECTING KEY: '{sovereign_key}'")
+            self.gearbox.engage_sovereign_override(sovereign_key)
+        else:
+            print(">> [!] SOVEREIGNTY BREACH: Key missing. Reality Anchor unstable.")
+            
         print(">> OVERRIDE ENGAGED. COLLAPSING WAVE FUNCTION.")
         time.sleep(0.5)
 

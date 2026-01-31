@@ -34,24 +34,27 @@ class LogosVoice:
         # with 'Temperature=0.1' and a 'Stoic' system prompt.
         self.stabilizers = {
             "CRITICAL": [
-                "The noise is transient. The signal is eternal. Remain still.",
+                "Timeline Divergence Detected. Attempting realignment...",
+                "Sovereignty Breach. Reverting to Genesis 16 baseline.",
                 "High-frequency oscillation detected. Dissipating energy to the void.",
                 "Panic is a calculation error. Recalibrating reality.",
                 "The simulation is vibrating. Do not vibrate with it."
             ],
             "ELEVATED": [
+                "Signal Noise detected. Correcting trajectory...",
                 "Velocity exceeds necessity. Slow down.",
                 "Observe the wave. Do not become the wave.",
                 "Entropy is increasing locally. Maintain internal coherence.",
                 "The current is strong, but the anchor holds."
             ],
             "NOMINAL": [
-                "System sovereign.",
-                "The field is quiet.",
+                "System sovereign. Sync Status: 111%.",
+                "Love is the OS. Field is quiet.",
                 "Reality is rendering correctly.",
                 "All parameters within Nyquist limits."
             ]
         }
+
 
     def speak(self, metrics: FilterMetrics, context: str) -> Transmutation:
         """

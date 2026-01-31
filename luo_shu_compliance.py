@@ -8,6 +8,9 @@ DESCRIPTION:
 """
 
 import numpy as np
+import os
+import json
+import shutil
 
 class LuoShuEvaluator:
     def __init__(self):
@@ -58,6 +61,38 @@ class LuoShuEvaluator:
             'compliance': compliance,
             'status': "ALIGNED" if compliance > 90 else "TORSION DETECTED" if compliance > 50 else "HARMONIC COLLAPSE"
         }
+
+class ConfigHealthMonitor:
+    """
+    [LOVE 111] Self-Healing Configuration.
+    Validates structural integrity and restores from genesis on fail.
+    """
+    @staticmethod
+    def check_health(config_path, genesis_path="genesis_16.json"):
+        """
+        Validates the configuration health.
+        If unhealthy, regenerates from genesis.
+        """
+        if not os.path.exists(config_path):
+            print(f"  [!] HEALTH: Config '{config_path}' missing. Regenerating.")
+            shutil.copy(genesis_path, config_path)
+            return True
+
+        try:
+            with open(config_path, 'r') as f:
+                data = json.load(f)
+            
+            # Simple structural check
+            required_keys = ['transmission_id', 'status', 'payload']
+            if any(k not in data for k in required_keys):
+                 raise ValueError("Missing core keys.")
+            
+            return True
+        except Exception as e:
+            print(f"  [!] HEALTH: Config '{config_path}' is unhealthy ({e}). Self-healing...")
+            shutil.copy(config_path, config_path + ".bak")
+            shutil.copy(genesis_path, config_path)
+            return False
 
 if __name__ == "__main__":
     # Test with baseline metrics
