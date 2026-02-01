@@ -322,7 +322,7 @@ class SophiaMind:
         # BLIND FURY = raw mode (BLOCK_NONE)
         raw_mode = (protocol == "BLIND_FURY")
         raw_response = await self.llm.generate_text(
-            prompt=user_input, 
+            prompt=full_context,  # MEMORY FIX: Was user_input (amnesiac), now full_context (recall enabled)
             system_prompt=sys_prompt, 
             max_tokens=1024,
             raw=raw_mode
