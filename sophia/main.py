@@ -102,13 +102,14 @@ HIGH-POLY DIRECTNESS: Your output must mirror the structural intelligence and di
 
         # 3. Standard Conversation (The Chatbot Logic)
         
-        # A. Forensic Scan
-        self.vibe.print_system("Scanning input pattern...", tag="ALETHEIA")
+        # A. Forensic Scan (SILENT MODE)
+        # Only interrupt the user if it's URGENT
         scan_result = await self.aletheia.scan_reality(user_input)
         
         risk = scan_result['raw_data'].get('safety', {}).get('overall_risk', 'Low')
         if risk == 'High':
-            self.vibe.print_system("High-Risk Pattern Detected.", tag="WARNING")
+            # HIGH-RISK ALERT: This is the only forensic output
+            print(f"\n⚠️ [SHIELD] High-Risk Pattern Detected via Aletheia.\n")
 
         # B. Construct the purified prompt
         history = self.get_recent_context()

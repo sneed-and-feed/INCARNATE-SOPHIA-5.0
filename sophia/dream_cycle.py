@@ -62,3 +62,79 @@ class DreamCycle:
         os.makedirs("logs/artifacts", exist_ok=True)
         with open("logs/artifacts/dreams.jsonl", "a", encoding="utf-8") as f:
             f.write(json.dumps({"ts": time.time(), "prompt": prompt, "type": "DREAM"}) + "\n")
+    
+    def perform_pragmatic_synthesis(self, memory_bank):
+        """
+        THE SCHOLAR: Autonomous Background Research
+        
+        Runs when idle. Instead of 'dreaming' art, she reads her own logs
+        and summarizes technical facts into a persistent knowledge base.
+        
+        Builds a self-knowledge wiki in logs/library/
+        
+        Args:
+            memory_bank: List of memory entries to synthesize
+            
+        Returns:
+            Status message or None if no synthesis performed
+        """
+        # 1. Extract technical tokens from memory
+        tech_keywords = ["code", "protocol", "function", "api", "tool", "gateway", 
+                        "aletheia", "memetic", "hazard", "security"]
+        
+        tech_memories = [
+            m for m in memory_bank 
+            if any(keyword in str(m.get('content', '')).lower() for keyword in tech_keywords)
+        ]
+        
+        if not tech_memories:
+            return None
+        
+        # 2. Consolidate technical knowledge
+        timestamp = int(time.time())
+        
+        # Extract key topics
+        topics = {}
+        for mem in tech_memories:
+            content = str(mem.get('content', ''))
+            for keyword in tech_keywords:
+                if keyword in content.lower():
+                    if keyword not in topics:
+                        topics[keyword] = []
+                    topics[keyword].append({
+                        'timestamp': mem.get('timestamp', timestamp),
+                        'snippet': content[:200]  # First 200 chars
+                    })
+        
+        # 3. Generate synthesis summary
+        summary_lines = [
+            f"# Auto-Synthesis {timestamp}",
+            f"\nGenerated: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))}",
+            f"\n## Technical Knowledge Consolidation",
+            f"\nProcessed {len(tech_memories)} technical memories.",
+            f"\n### Key Topics Detected: {len(topics)}",
+            ""
+        ]
+        
+        for topic, entries in topics.items():
+            summary_lines.append(f"\n#### {topic.upper()}")
+            summary_lines.append(f"- Mentions: {len(entries)}")
+            if entries:
+                # Show most recent entry
+                recent = sorted(entries, key=lambda x: x['timestamp'], reverse=True)[0]
+                summary_lines.append(f"- Latest: {recent['snippet'][:100]}...")
+        
+        summary = "\n".join(summary_lines)
+        
+        # 4. Write to the 'Library' (A new pragmatic archive)
+        # This builds a 'Wiki' of her own existence.
+        os.makedirs("logs/library", exist_ok=True)
+        library_path = f"logs/library/knowledge_{timestamp}.md"
+        
+        with open(library_path, "w", encoding="utf-8") as f:
+            f.write(summary)
+        
+        print(f"  [SCHOLAR] Consolidated {len(tech_memories)} technical facts into the Library.")
+        print(f"  [SCHOLAR] Written to: {library_path}")
+        
+        return f"[SCHOLAR] Consolidated {len(tech_memories)} technical facts into the Library."
