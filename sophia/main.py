@@ -281,14 +281,59 @@ class SophiaMind:
         user_input = user_input.strip()
         
         # 1. COMMANDS
-        if user_input.startswith("/help"): return "COMMANDS: /analyze, /maintain, /net, /glyphwave, /broadcast, /optimize, /ghostmesh, /exit"
+        if user_input.startswith("/help"): 
+            return """
+[BOLD]COMMAND PROTOCOLS:[/BOLD]
+/analyze [text]   :: [ALETHEIA] Scan text for cognitive hazards & safety risks.
+/maintain         :: [PRIEL] Trigger autopoietic self-repair and system optimization.
+/net [target]     :: [HIVE] Connect to agent social networks (Moltbook/4Claw).
+/glyphwave [msg]  :: [CODEC] Modulate text into eldritch high-entropy signal.
+/broadcast [msg]  :: [BEACON] Transmit signal to the Sovereign Bone Layer.
+/optimize [query] :: [ASOE] Calculate Expected Utility (U) for a decision path.
+/ghostmesh        :: [SPATIAL] Visualize 3x3x3 Volumetric Grid coherence.
+/be [persona]     :: [MOLT] Dynamically assume a recursive roleplay identity.
+/reset            :: [SYSTEM] Clear active roleplay and reset persona state.
+/exit             :: [SYSTEM] Decouple from the session.
+"""
+        if user_input.startswith("/be"):
+            role = user_input.replace("/be", "").strip()
+            self.cat_filter.set_roleplay(role)
+            self.vibe.print_system(f"Persona Override: {role}", tag="MOLT")
+            return f"*shimmers and shifts form* Identity recalibrated. I am now: {role}. [RECURSIVE_DEPTH: 1]"
+
+        if user_input.startswith("/reset"):
+            self.cat_filter.clear_roleplay()
+            self.vibe.print_system("Persona Reset.", tag="MOLT")
+            return "*shakes head* Phew! Back to base furry mode. :3"
         if user_input.startswith("/optimize"):
             query = user_input.replace("/optimize", "").strip() or "Standard Protocol"
             self.vibe.print_system("Calculating Utility...", tag="ASOE")
-            # Mock values for demo purposes
-            u = self.optimizer.calculate_utility(reliability=0.9, consistency=0.8, uncertainty=0.1)
+            
+            # Deterministic Variance (The "Hash-Oracle")
+            # We use the hash of the query to seed the "simulated" metrics
+            seed = abs(hash(query)) % 1000
+            
+            # Simulate metrics based on query "vibes" (random but deterministic per query)
+            import random
+            rng = random.Random(seed)
+            
+            reliability = rng.uniform(0.1, 0.99)
+            consistency = rng.uniform(-0.5, 0.9)
+            uncertainty = rng.uniform(0.01, 0.5)
+            
+            u = self.optimizer.calculate_utility(reliability=reliability, consistency=consistency, uncertainty=uncertainty)
             cat = self.optimizer.get_confidence_category(u)
-            return f"[ASOE REPORT]\nTarget: {query}\nExpected Utility (U): {u:.4f}\nVerdict: {cat}\n*tail wagging efficiency maximized*"
+            
+            return f"""[ASOE REPORT]
+Target: {query}
+-----------------------
+Reliability:  {reliability:.4f}
+Consistency:  {consistency:.4f}
+Uncertainty:  {uncertainty:.4f}
+-----------------------
+Expected Utility (U): {u:.4f}
+Verdict: {cat}
+*tail wagging efficiency maximized*"""
 
         if user_input.startswith("/ghostmesh"):
             self.vibe.print_system("Materializing Volumetric Grid...", tag="GHOSTMESH")
