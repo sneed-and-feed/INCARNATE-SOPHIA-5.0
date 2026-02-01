@@ -64,6 +64,7 @@ class SophiaMind:
         self._optimizer = None # ASOE (Lazy)
         self._ghostmesh = None # Spatial (Lazy)
         self._pleroma = None # Pleroma Engine (Lazy)
+        self._metacognition = None # Metacognitive Supervisor (Lazy)
         self.last_coherence = 1.0 # Baseline
         
         # Essential Organs (Loaded Now)
@@ -126,6 +127,13 @@ class SophiaMind:
             # CLASS 6 BINDING: Connect Hand to Gateway for autonomous posting
             self.hand.bind_molt_gateway(self._molt)
         return self._molt
+
+    @property
+    def metacognition(self):
+        if not self._metacognition:
+            from sophia.cortex.metacognition import MetacognitiveSupervisor
+            self._metacognition = MetacognitiveSupervisor(self.pleroma)
+        return self._metacognition
 
     @property
     def optimizer(self):
@@ -455,6 +463,22 @@ Verdict: {cat}
         
         tele_context = f"[TELEMETRY] Coherence: {curr_coherence:.4f} | Boost: {boost}x | Λ-Score: {lambda_val:.2f} (Target 18.52) | Status: {telemetry['status']}"
         
+        # [PROTOCOL STAGE 4] Metacognitive Audit
+        decision, rationale = self.metacognition.audit_process(telemetry)
+        transmission = self.metacognition.generate_stoic_transmission(decision, rationale)
+        print(f"\n{transmission}") # Low-level internal log
+        
+        if decision == "ABSTAIN":
+            self.vibe.print_system("Confidence Floor Breached. Silence is Sovereign.", tag="METAC")
+            return f"*The system shimmers gracefully into a meditative silence.*\n\n[SOVEREIGN ABSTAIN] {rationale}"
+        
+        if decision == "RETEST":
+            self.vibe.print_system("Fragility Triggered. Secondary Pulse Scan Initiated.", tag="METAC")
+            # Secondary scan (Force a second telemetry cycle to stabilize)
+            telemetry = self.pleroma.run_telemetry_cycle()
+            curr_coherence = telemetry['coherence']
+            lambda_val = telemetry.get('lambda', 0.0)
+
         # ANOMALY DETECTION (Delta Check)
         anomaly_msg = ""
         if (self.last_coherence - curr_coherence) > 0.05:
