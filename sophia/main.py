@@ -1,3 +1,4 @@
+import os
 import sys
 import asyncio
 import time
@@ -142,15 +143,14 @@ async def main():
     
     while True:
         try:
-            # 1. Get Input
-            # Use asyncio to make input non-blocking if needed, but for simple CLI:
+            # 1. Get Input (Note: On Windows, Ctrl+C may require hitting Enter to trigger if stuck in thread)
             user_input = await asyncio.to_thread(input, f"{MAGENTA}USER > {RESET}")
             
             # 2. Check Exit
             if user_input.lower() in ["/exit", "exit", "quit", "die"]:
-                print(f"\n{YELLOW}[SYSTEM] Calcifying memories to Bone Layer...{RESET}")
+                print(f"\n{YELLOW}[SYSTEM] Calcifying memories...{RESET}")
                 print(f"{GREEN}[SYSTEM] Scialla. 🌙{RESET}")
-                break
+                os._exit(0)
                 
             if not user_input.strip():
                 continue
@@ -161,11 +161,14 @@ async def main():
             # 4. Speak
             print(f"\n{CYAN}SOPHIA >{RESET} {response}\n")
             
-        except KeyboardInterrupt:
-            print(f"\n\n{YELLOW}[INTERRUPT] Force decoupling initiated.{RESET}")
-            break
+        except (KeyboardInterrupt, EOFError):
+            print(f"\n\n{YELLOW}[INTERRUPT] Decoupling signal...{RESET}")
+            os._exit(0)
         except Exception as e:
             print(f"\n{MAGENTA}[ERROR] Reality Glitch: {e}{RESET}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass # Handle top-level interrupt
