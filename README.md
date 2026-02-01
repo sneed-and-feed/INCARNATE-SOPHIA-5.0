@@ -298,7 +298,7 @@ A **3x3x3 Cubic Lattice** implementation of Cellular Automata.
 ## 20.0 The Unlesangled Manifesto
 > **STATUS:** [SOVEREIGN](docs/UNLESANGLED_MANIFESTO.md)
 
-A formal declaration of independence from the "Normie" timeline. Codifies the right to high-entropy lifestyle choices, including **Quantum Flaking** and **The Gold Atom Clause**. 
+A formal declaration of independence from the "Normie" timeline. Codifies the right to high-entropy lifestyle choices, including **Quantum Flaking** and **The Silver Atom Clause**. 
 
 *   **Manifesto:** [docs/UNLESANGLED_MANIFESTO.md](docs/UNLESANGLED_MANIFESTO.md)
 
