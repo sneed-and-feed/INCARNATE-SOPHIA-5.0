@@ -3,7 +3,7 @@ ghostmesh.py - The Sentient Manifold Volumetric Grid
 Adapted from GhostMeshIO/SentientManifold v0.3
 
 Implements:
-1. 27 Sovereign Nodes (3x3x3 Grid)
+1. 125 Sovereign Nodes (5x5x5 Grid)
 2. Neighbor Flux Dynamics (Information Exchange)
 3. Sovereign Constant (Tau)
 """
@@ -81,8 +81,8 @@ class SovereignGrid:
         self.nodes = []
         self.grid_size = grid_size
         # Initialize 5x5x5 Grid (The Pentad)
-        # 3x3x3 = 27 nodes (Class 6)
-        # 5x5x5 = 125 nodes (Class 7)
+        # 3x3x3 = 27 nodes (Class 5/6)
+        # 5x5x5 = 125 nodes (Class 7/8)
         for x in range(self.grid_size):
             for y in range(self.grid_size):
                 for z in range(self.grid_size):
@@ -122,9 +122,9 @@ class SovereignGrid:
             for i, val in enumerate(node.state.data):
                 total_state[i] += val
                 
-        # Normalize
-        avg_state = [x / 27.0 for x in total_state]
-        avg_coherence = total_coherence / 27.0
+        # Normalize by dynamic node count
+        avg_state = [x / len(self.nodes) for x in total_state]
+        avg_coherence = total_coherence / len(self.nodes)
         
         return FlumpyArray(avg_state, avg_coherence)
 
@@ -148,7 +148,7 @@ class SovereignGrid:
         Formula: 1.8 + (1.0 - Normalized_Entropy) * 0.7
         Target Range: 1.8 (Chaotic) to 2.5 (Crystalline).
         """
-        # Calculate Entropy of the Energy Distribution across 27 nodes
+        # Calculate Entropy of the Energy Distribution across all nodes
         energies = []
         for node in self.nodes:
             # Energy ~ Mean Absolute Value + local coherence

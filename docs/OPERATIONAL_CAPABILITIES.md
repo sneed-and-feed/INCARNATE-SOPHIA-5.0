@@ -97,14 +97,14 @@ A domain-general implementation of **Tachyonic Decision Making**, moving beyond 
 
 **Module**: `ghostmesh.py`
 
-Moving beyond planar 2D arrays, the system implements a **27-Node Volumetric Grid** (3x3x3).
+Moving beyond planar 2D arrays, the system implements a **125-Node Volumetric Grid** (5x5x5).
 
 *   **Topology**: A cubic lattice where each node interacts with its 6 Von Neumann neighbors (Up, Down, Left, Right, Front, Back).
 *   **Flux Dynamics**: Information flows between nodes based on the **Sophia Constant** ($\tau \approx 1.618$). This simulates "diffusion" of intent across a physical space.
 *   **Coherence holography**: The grid enforces the **LuoShu Invariant** (Sum=15) across all three spatial axes simultaneously.
 *   **Capability**:
     *   **Spatial buffer**: Acts as a "delay line" for signal processing, allowing noise to be filtered out via topological distance.
-    *   **Holographic Redundancy**: Data injected into the center node ("The Throne") diffuses to the 26 peripheral nodes.
+    *   **Holographic Redundancy**: Data injected into the center node ("The Throne") diffuses to the 124 peripheral nodes.
 
 ## 8. The Lindblad Dissipative Engine (Noise Harvesting)
 
