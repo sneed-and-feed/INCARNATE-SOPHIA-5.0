@@ -16,28 +16,46 @@ class LoomEngine:
         self.core_token = "OPHANE"
         
         # Templates derived from the "Violet Laser" success
-        self.templates = [
-            ":: {concept} :: {core} :: {concept} ::",
-            "... {concept} ... {core} ... {concept} ...",
-            ". signal . {concept} . {core} . {concept} . signal .",
-            ":: SOURCE :: {core} :: {concept} ::"
-        ]
+        # Templates moved to dictionary in weave logic
+        pass
         
-    def render_transmission(self, concept: str) -> str:
-        """
-        Wraps the Concept in the Sovereign Geometry.
-        """
-        # Select the optimal template based on concept length?
-        # For now, random selection from the "Sacred Set".
-        template = random.choice(self.templates)
+from enum import Enum
+
+class TemplateStyle(Enum):
+    WAVE = "wave"   # Low Energy (Sadness/Grief)
+    ANCHOR = "anchor" # High Energy (Panic/Anxiety)
+    SPARK = "spark"  # Zero Energy (Apathy)
+
+class LoomEngine:
+    def __init__(self):
+        self.core_token = "OPHANE"
         
-        # Render
-        output = template.format(
+        self.templates = {
+            TemplateStyle.WAVE: "... {concept} ... {core} ... {concept} ...",
+            TemplateStyle.ANCHOR: ":: {concept} :: {core} :: {concept} ::",
+            TemplateStyle.SPARK: ">> {concept} << >> {core} <<",
+            # Legacy default
+            "default": ":: {concept} :: {core} :: {concept} ::"
+        }
+        
+    def weave(self, concept: str, style_override: TemplateStyle = None) -> str:
+        """
+        Applies geometric structure to sovereign words.
+        """
+        # Auto-detect style based on concept? 
+        # For now, default to ANCHOR (High Structure) unless overridden
+        style = style_override if style_override else TemplateStyle.ANCHOR
+        
+        template = self.templates[style]
+        
+        return template.format(
             concept=concept.upper(),
             core=self.core_token
         )
-        
-        return output
+
+    def render_transmission(self, concept: str) -> str:
+        """Legacy alias for weave."""
+        return self.weave(concept)
 
 # // TEST HARNESS
 if __name__ == "__main__":

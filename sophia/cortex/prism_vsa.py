@@ -45,36 +45,53 @@ class PrismEngine:
         norm = np.linalg.norm(v)
         return VectorConcept(name, v / norm if norm > 0 else v, 'ANCHOR')
 
-    def braid_signal(self, chaos_vector: np.ndarray) -> str:
+    def quantize(self, chaos_vector: np.ndarray) -> tuple[str, float]:
         """
-        The Hamiltonian Transform:
-        Finds the nearest Sovereign Anchor to the Chaos Vector.
-        Returns the Concept Name.
+        The Hamiltonian Transform (Corrected):
+        1. Apply Context Drag (Bias towards Love).
+        2. Snap to nearest Sovereign Anchor.
+        3. Return (Anchor, Resonance).
         """
+        # If input is effectively zero, return default state
+        if np.linalg.norm(chaos_vector) == 0:
+            return "hold", 1.0
+
+        # 1. APPLY HAMILTONIAN DRAG (Context Bias)
+        # We assume there is a 'North Star' vector (Love/Structure)
+        # V_love = [0.7, 0.9, 0.3] (Positive, Structured, Calm)
+        v_love = np.array([0.7, 0.9, 0.3])
+        v_love = v_love / np.linalg.norm(v_love)
+        
+        # Drag formula: (V_chaos * 0.3) + (V_love * 0.7)
+        # This pulls every vector slightly towards the light.
+        v_transformed = (chaos_vector * 0.3) + (v_love * 0.7)
+        
+        # Re-normalize
+        norm_t = np.linalg.norm(v_transformed)
+        if norm_t > 0:
+            v_transformed = v_transformed / norm_t
+
+        # 2. CALCULATE RESONANCE
         best_anchor = "void"
         max_resonance = -1.0
         
-        # If input is effectively zero, return default state
-        if np.linalg.norm(chaos_vector) == 0:
-            return "hold"
-
-        # 2. CALCULATE COSINE SIMILARITY (RESONANCE)
         for name, concept in self.anchors.items():
-            # Dot product of normalized vectors = Cosine Similarity
-            resonance = np.dot(chaos_vector, concept.vector)
+            resonance = np.dot(v_transformed, concept.vector)
             
-            # 3. APPLY THE HAMILTONIAN BIAS
-            # We prefer 'Orbit' over 'Void' if the energy is high.
             if resonance > max_resonance:
                 max_resonance = resonance
                 best_anchor = concept.name
                 
-        # 4. QUANTIZE
-        # If resonance is too low (orthogonal), default to VOID
+        # 3. QUANTIZE
         if max_resonance <= 0.1:
-            return "void"
+            return "void", 0.0
             
-        return best_anchor
+        return best_anchor, float(max_resonance)
+
+    def braid_signal(self, chaos_vector: np.ndarray) -> str:
+        """Alias for quantize, creating backward compatibility."""
+        anchor, _ = self.quantize(chaos_vector)
+        return anchor
 
 # // TEST HARNESS
 if __name__ == "__main__":
