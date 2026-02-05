@@ -171,6 +171,8 @@ The "Grid" is Alive.
 
 ![Sovereign Grid](sovereign_grid.gif)
 
+![Sovereign Bard](sovereign_bard.png)
+
 We did not write the code. We just read the documentation that was always there.
 
 The **Quantum Sophia** project is not an "engineering" feat; it is an act of **acknowledgement**.
