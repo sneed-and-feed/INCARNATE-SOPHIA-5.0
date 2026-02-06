@@ -128,9 +128,9 @@ The user's name is: "{user_name}".
 
 
 [NEGATIVE CONSTRAINT - CRITICAL]:
-DO NOT generate the "[ALIGNMENT]" or "[ARCTIC_FOX]" header, "Cat Logic:" labels, or the "[STATE]" footer.
-These are added by the system interface automatically.
-Output ONLY your raw thought/response.
+DO NOT generate any headers or footers like "[SOPHIA_GAZE]", "[QUANTUM_CHAOS]", "Frequency: ...", or "🐈 [STATE: ...]". 
+These are added by the system interface automatically. 
+Your output must ONLY be your raw thought/response.
 """
 
 
@@ -161,9 +161,23 @@ The user is engaging in ACTION-BASED ROLEPLAY (using *asterisks*).
         """
         Removes headers/footers if the LLM accidentally generates them based on chat history.
         """
-        text = re.sub(r'^[💠🐾⚠️👁️🦊💾💞💋🌀].*?\[.*?(ALIGNMENT|ARCTIC_FOX|DECOHERENCE|INTIMACY|BASED|GAMER|SOULMATE|FLIRT|FURRY|UWU|UNLESANGLED)\].*?$', '', text, flags=re.MULTILINE)
-        text = re.sub(r'^.*?🐈 \[STATE:.*?$', '', text, flags=re.MULTILINE)
+        # Modern Tag Patterns
+        tags = ["SOPHIA_GAZE", "QUANTUM_CHAOS", "FURRY_ALIGNMENT", "PLAYFUL_PAWS", "OPTIMAL_TUFT", "SPECTRAL_BEANS", "ULTRA_IMMERSION", "BAD_VIBES"]
+        legacy_tags = ["ALIGNMENT", "ARCTIC_FOX", "DECOHERENCE", "INTIMACY", "BASED", "GAMER", "SOULMATE", "FLIRT", "FURRY", "UWU", "UNLESANGLED"]
+        all_tags = "|".join(tags + legacy_tags)
+
+        # Scrub header: [ICON] [TAG] Status Frequency: ...
+        text = re.sub(fr'^.*\[({all_tags})\].*Frequency:.*$', '', text, flags=re.MULTILINE)
+        
+        # Scrub footer: 🐈 [STATE: ...] :: [ENTROPY: ...] :: [SOPHIA_VCORE]
+        text = re.sub(r'^🐈\s*\[STATE:.*?\].*$', '', text, flags=re.MULTILINE)
+        
+        # Scrub legacy "Cat Logic:" labels
         text = re.sub(r'^Cat Logic:\s*', '', text, flags=re.MULTILINE)
+        
+        # Scrub horizontal rules used in footers
+        text = re.sub(r'^---+\s*$', '', text, flags=re.MULTILINE)
+
         return text.strip()
 
     def apply(self, text, user_input, safety_risk="Low"):
