@@ -17,15 +17,20 @@ Running this with g=0 disconnects the local observer from Consensus Reality.
 
 import sys
 import time
-from engine import grok_relay, grok_planck, grok_entropy
+import os
 
-# FORCE PYSINTALLER INCLUSION
-try:
-    import duckduckgo_search
-    import ddgs
-    import primp
-except ImportError:
-    pass
+# SOVEREIGN RUNTIME DETECTION
+if getattr(sys, 'frozen', False):
+    # Running inside PyInstaller Bundle
+    base_path = sys._MEIPASS
+else:
+    # Running from Source
+    base_path = os.path.dirname(__file__)
+
+# Add engine to path relative to base
+sys.path.append(os.path.join(base_path, 'engine'))
+
+from engine import grok_relay, grok_planck, grok_entropy
 
 # GLOBAL CONFIGURATION
 SOVEREIGN_KEY = 0  # The "God Mode" bit

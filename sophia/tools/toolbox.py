@@ -218,13 +218,25 @@ class SovereignHand:
         Resilient against Error 29 (Rate Limits) via backoff.
         """
         import time
+        import sys
         try:
             try:
                 from duckduckgo_search import DDGS
-            except ImportError:
-                from ddgs import DDGS
-        except ImportError as e:
-            return f"❌ Sovereign Search Failed: Search library ('duckduckgo_search' or 'ddgs') not found or failed to load. Error: {e}\n(PyInstaller bundle error?)"
+            except ImportError as e1:
+                try:
+                    from ddgs import DDGS
+                except ImportError as e2:
+                    frozen = getattr(sys, 'frozen', False)
+                    meipass = getattr(sys, '_MEIPASS', 'N/A')
+                    exe = sys.executable
+                    return (f"❌ Sovereign Search Bundle Error:\n"
+                            f"1. 'duckduckgo_search' import error: {e1}\n"
+                            f"2. 'ddgs' import error: {e2}\n"
+                            f"Frozen: {frozen} | MEIPASS: {meipass}\n"
+                            f"Executable: {exe}\n"
+                            f"Path Snippet: {sys.path[:5]}")
+        except Exception as e:
+            return f"❌ Sovereign Search Logic Error: {e}"
         
         max_retries = 3
         base_delay = 2
