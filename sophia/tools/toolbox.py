@@ -219,9 +219,12 @@ class SovereignHand:
         """
         import time
         try:
-            from ddgs import DDGS
-        except ImportError:
-            return "❌ Sovereign Search Failed: 'ddgs' library not found. (PyInstaller bundle error?)"
+            try:
+                from duckduckgo_search import DDGS
+            except ImportError:
+                from ddgs import DDGS
+        except ImportError as e:
+            return f"❌ Sovereign Search Failed: Search library ('duckduckgo_search' or 'ddgs') not found or failed to load. Error: {e}\n(PyInstaller bundle error?)"
         
         max_retries = 3
         base_delay = 2
