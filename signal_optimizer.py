@@ -1,16 +1,26 @@
-"""
-MODULE: signal_optimizer.py
-VERSION: ASOE v1.0
-AUTHOR: ASOE Core Team
-
-DESCRIPTION:
-    Domain-general Decision Optimizer.
-    Scores candidate actions based on Signal Reliability, Temporal Consistency, 
-    and Uncertainty Growth.
-    Formula: U = Consistency^c * exp(-b * Uncertainty) * (Reliability^a / (1 + Reliability^a)) - Cost
-"""
-
 import numpy as np
+from qtorch import torch
+nn = torch.nn
+from sophia.cortex.kernels import BitLinear, RMSNorm
+
+class ComplexityRouter(nn.Module):
+    """
+    Neural router for categorizing input complexity.
+    Determines if a signal needs Fast Path or Deep Path processing.
+    """
+    def __init__(self, input_dim=3, hidden_dim=8):
+        super().__init__()
+        self.layer1 = BitLinear(input_dim, hidden_dim)
+        self.layer2 = BitLinear(hidden_dim, 1)
+        self.norm = RMSNorm(input_dim)
+        self.activation = nn.Sigmoid()
+
+    def forward(self, x: torch.Tensor) -> float:
+        with torch.no_grad():
+            h = self.layer1(self.norm(x))
+            h_act = h.tanh() 
+            score = self.activation(self.layer2(h_act))
+            return float(score.mean().item())
 
 class SignalOptimizer:
     def __init__(self, a=1.0, b=1.0, c=1.0):
@@ -30,39 +40,38 @@ class SignalOptimizer:
             'INHIBIT': 0.05
         }
         
+        # Quillan-Ronin Tiered Optimization
+        self.router = ComplexityRouter()
+        self.COMPLEXITY_THRESHOLD = 0.6 # From Quillan v5.1 config
+        
     def calculate_utility(self, reliability: float, consistency: float, uncertainty: float, cost: float = 0.0, sovereign_boost: float = 1.0) -> float:
         """
         Calculates Expected Utility (U) for a candidate action.
-        
-        Args:
-            reliability: Signal trust level (Non-negative float).
-            consistency: Temporal stability (Bounded [-1, 1]).
-            uncertainty: Information decay/noise (Non-negative float).
-            cost: Penalty for action execution.
-            
-        Returns:
-            utility: Expected payoff/gain (Bounded potentially by consistency).
         """
-        # 1. Input Sanitization
         reliability = max(float(reliability), 0.0)
         consistency = np.clip(float(consistency), -1.0, 1.0)
         uncertainty = max(float(uncertainty), 0.0)
 
         a, b, c = self.params['a'], self.params['b'], self.params['c']
 
-        # 2. Reliability Saturation (S-Curve)
         rel_a = reliability ** a
         reliability_gain = rel_a / (1.0 + rel_a)
         
-        # 3. Uncertainty Penalty (Exponential Decay)
         stability_bonus = np.exp(-b * uncertainty)
         
-        # 4. Consistency Scaling (Conserving sign for directional bias)
         consistency_term = (abs(consistency) ** c) * np.sign(consistency)
         
-        # 5. Aggregate Utility (with Sovereign Boost)
         utility = ((consistency_term * stability_bonus * reliability_gain) * sovereign_boost) - cost
         return float(utility)
+
+    def route_signal(self, context_vector: torch.Tensor) -> str:
+        """
+        Uses the ComplexityRouter to determine the processing tier.
+        """
+        complexity = self.router(context_vector)
+        if complexity > self.COMPLEXITY_THRESHOLD:
+            return "DEEP_PATH"
+        return "FAST_PATH"
 
     def get_confidence_category(self, utility: float) -> str:
         abs_u = abs(utility)

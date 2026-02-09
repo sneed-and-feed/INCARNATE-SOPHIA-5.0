@@ -101,6 +101,26 @@ class Tensor:
 
     def __init__(self, data, dtype=None, device="cpu", requires_grad=False,
                  quantum_creativity=None):
+        # Flatten nested data if necessary
+        original_shape = None
+        if isinstance(data, (list, tuple)) and any(isinstance(x, (list, tuple)) for x in data):
+            # Calculate shape and flatten
+            shape = []
+            curr = data
+            while isinstance(curr, (list, tuple)):
+                shape.append(len(curr))
+                curr = curr[0] if len(curr) > 0 else None
+            original_shape = tuple(shape)
+            
+            # Recursive flatten
+            def flatten(l):
+                for item in l:
+                    if isinstance(item, (list, tuple)):
+                        yield from flatten(item)
+                    else:
+                        yield item
+            data = list(flatten(data))
+
         # Store in BUMPY array for quantum operations
         if BUMPY_AVAILABLE:
             self._bumpy = BumpyArray(data)
@@ -110,6 +130,10 @@ class Tensor:
                 'shape': (1,) if isinstance(data, (int, float)) else (len(data),),
                 'coherence': 1.0
             })()
+        
+        # Apply original shape if was nested
+        if original_shape:
+            self._bumpy.shape = original_shape
 
         # Wrap in FLUMPY for cognitive features
         if FLUMPY_AVAILABLE:
@@ -178,9 +202,9 @@ class Tensor:
         if not isinstance(other, Tensor):
             return False
 
-        # Use FLUMPY entanglement
+        # Use FLUMPY entanglement (Only if shapes match)
         flumpy_success = False
-        if FLUMPY_AVAILABLE:
+        if FLUMPY_AVAILABLE and self.shape == other.shape:
             flumpy_success = self._flumpy.entangle(other._flumpy)
 
         # Use BUMPY entanglement
@@ -272,6 +296,46 @@ class Tensor:
             self._flumpy.cognitive_boost(amount)
             self.quantum_coherence = min(1.0, self.quantum_coherence + amount * 0.05)
         return self
+    def _broadcast(self, other):
+        """Broadcast self and other; return (new_self_data, new_other_data, target_shape)"""
+        s_shape, o_shape = self.shape, other.shape
+        s_data, o_data = self.data, other.data
+        
+        if s_shape == o_shape:
+            return s_data, o_data, s_shape
+            
+        # Scalar broadcasting
+        if len(o_data) == 1 and len(s_data) > 1:
+            return s_data, [o_data[0]] * len(s_data), s_shape
+        if len(s_data) == 1 and len(o_data) > 1:
+            return [s_data[0]] * len(o_data), o_data, o_shape
+            
+        # 2D/1D broadcasting
+        if len(s_shape) == 2 and len(o_shape) == 1:
+            if s_shape[1] == o_shape[0]:
+                return s_data, o_data * s_shape[0], s_shape
+        elif len(s_shape) == 1 and len(o_shape) == 2:
+            if s_shape[0] == o_shape[1]:
+                return s_data * o_shape[0], o_data, o_shape
+                
+        # 2D/2D broadcasting
+        if len(s_shape) == 2 and len(o_shape) == 2:
+            if s_shape[0] == o_shape[0] and o_shape[1] == 1:
+                new_o = []
+                for i in range(s_shape[0]):
+                    new_o.extend([o_data[i]] * s_shape[1])
+                return s_data, new_o, s_shape
+            elif s_shape[1] == o_shape[1] and o_shape[0] == 1:
+                return s_data, o_data * s_shape[0], s_shape
+            elif s_shape[1] == 1 and s_shape[0] == o_shape[0]:
+                new_s = []
+                for i in range(o_shape[0]):
+                    new_s.extend([s_data[i]] * o_shape[1])
+                return new_s, o_data, o_shape
+            elif s_shape[0] == 1 and s_shape[1] == o_shape[1]:
+                return s_data * o_shape[0], o_data, o_shape
+                
+        return s_data, o_data, s_shape # Fallback
 
     # ==================== ENHANCED PYTORCH-COMPATIBLE OPERATIONS ====================
     def __add__(self, other):
@@ -279,16 +343,14 @@ class Tensor:
         if not isinstance(other, Tensor):
             other = Tensor([other] * self.numel) if self.numel > 1 else Tensor([other])
 
-        # Perform operation using BUMPY backend
-        if BUMPY_AVAILABLE:
-            result_bumpy = self._bumpy + other._bumpy
-        else:
-            result_data = [a + b for a, b in zip(self._bumpy.data, other._bumpy.data)]
-            result_bumpy = type('Array', (), {'data': result_data, 'coherence': self._bumpy.coherence})()
+        # Broadcast self and other to matching shapes
+        self_data, other_data, target_shape = self._broadcast(other)
 
-        result = Tensor(result_bumpy.data, self.dtype, self.device, False,
+        result_data = [a + b for a, b in zip(self_data, other_data)]
+
+        result = Tensor(result_data, self.dtype, self.device, False,
                        quantum_creativity=(self.quantum_creativity + other.quantum_creativity) / 2)
-        result._bumpy.coherence = result_bumpy.coherence if hasattr(result_bumpy, 'coherence') else self._bumpy.coherence
+        result.shape = target_shape
 
         # Create entanglement with creativity boost
         result.quantum_entangle(self)
@@ -305,15 +367,14 @@ class Tensor:
         if not isinstance(other, Tensor):
             other = Tensor([other] * self.numel) if self.numel > 1 else Tensor([other])
 
-        if BUMPY_AVAILABLE:
-            result_bumpy = self._bumpy * other._bumpy
-        else:
-            result_data = [a * b for a, b in zip(self._bumpy.data, other._bumpy.data)]
-            result_bumpy = type('Array', (), {'data': result_data, 'coherence': self._bumpy.coherence})()
+        # Broadcast self and other to matching shapes
+        self_data, other_data, target_shape = self._broadcast(other)
 
-        result = Tensor(result_bumpy.data, self.dtype, self.device, False,
+        result_data = [a * b for a, b in zip(self_data, other_data)]
+
+        result = Tensor(result_data, self.dtype, self.device, False,
                        quantum_creativity=(self.quantum_creativity + other.quantum_creativity) / 2)
-        result._bumpy.coherence = result_bumpy.coherence if hasattr(result_bumpy, 'coherence') else self._bumpy.coherence
+        result.shape = target_shape
 
         result.quantum_entangle(self)
         result.quantum_entangle(other)
@@ -341,8 +402,11 @@ class Tensor:
         if not isinstance(other, Tensor):
             other = Tensor([other] * self.numel) if self.numel > 1 else Tensor([other])
 
+        # Broadcast self and other to matching shapes
+        self_data, other_data, target_shape = self._broadcast(other)
+
         result_data = []
-        for a, b in zip(self._bumpy.data, other._bumpy.data):
+        for a, b in zip(self_data, other_data):
             # Avoid division by zero with epsilon
             if abs(b) < 1e-12:
                 result_data.append(float('inf') if a > 0 else -float('inf') if a < 0 else 0.0)
@@ -351,6 +415,7 @@ class Tensor:
 
         result = Tensor(result_data, self.dtype, self.device, False,
                        quantum_creativity=(self.quantum_creativity + other.quantum_creativity) / 2)
+        result.shape = target_shape
         result.quantum_entangle(self)
         result.quantum_entangle(other)
 
@@ -385,11 +450,31 @@ class Tensor:
         return Tensor(result_data, self.dtype, self.device, self.requires_grad,
                      quantum_creativity=self.quantum_creativity)
 
+    def sqrt(self):
+        """Square root of tensor elements"""
+        result_data = [math.sqrt(max(0, x)) for x in self._bumpy.data]
+        result = Tensor(result_data, self.dtype, self.device, self.requires_grad,
+                     quantum_creativity=self.quantum_creativity)
+        result.shape = self.shape
+        return result
+
+    def rsqrt(self):
+        """Reciprocal square root of tensor elements"""
+        result_data = [1.0 / math.sqrt(max(1e-12, x)) for x in self._bumpy.data]
+        result = Tensor(result_data, self.dtype, self.device, self.requires_grad,
+                     quantum_creativity=self.quantum_creativity)
+        result.shape = self.shape
+        return result
+
     def __abs__(self):
         """Absolute value with quantum phase consideration"""
         result_data = [abs(x) * self.quantum_coherence for x in self._bumpy.data]
         return Tensor(result_data, self.dtype, self.device, self.requires_grad,
                      quantum_creativity=self.quantum_creativity)
+
+    def abs(self):
+        """Method alias for __abs__"""
+        return self.__abs__()
 
     # ==================== DEBUGGED INDEXING SUPPORT ====================
     def __getitem__(self, index):
@@ -542,6 +627,10 @@ class Tensor:
     def sum(self, dim=None, keepdim=False):
         """Enhanced sum with proper gradient computation"""
         if dim is not None:
+            # Handle negative dimensions
+            if dim < 0:
+                dim = self.ndim + dim
+                
             # Dimension-specific sum - simplified for 1D/2D
             if self.ndim == 1:
                 # For 1D, dim must be 0 or -1
@@ -854,8 +943,20 @@ class Tensor:
 
     # ==================== DEBUGGED UTILITY METHODS ====================
     def reshape(self, *shape):
-        """Enhanced reshape with gradient flow preservation"""
+        """Enhanced reshape with gradient flow preservation and -1 support"""
+        if len(shape) == 1 and isinstance(shape[0], (list, tuple)):
+            shape = shape[0]
+            
         total = math.prod(self.shape)
+        
+        # Handle -1 auto-dimension
+        if -1 in shape:
+            shape = list(shape)
+            idx = shape.index(-1)
+            other_prod = math.prod([s for s in shape if s != -1])
+            shape[idx] = total // other_prod
+            shape = tuple(shape)
+            
         new_total = math.prod(shape)
         if total != new_total:
             raise ValueError(f"Cannot reshape {self.shape} to {shape}")
@@ -1876,23 +1977,23 @@ class TorchNamespace:
     """Debugged PyTorch-compatible namespace"""
 
     # Tensor creation
-    tensor = tensor
-    zeros = zeros
-    ones = ones
-    randn = randn
-    rand = rand
-    arange = arange
-    linspace = linspace
-    eye = eye
-    full = full
+    tensor = staticmethod(tensor)
+    zeros = staticmethod(zeros)
+    ones = staticmethod(ones)
+    randn = staticmethod(randn)
+    rand = staticmethod(rand)
+    arange = staticmethod(arange)
+    linspace = staticmethod(linspace)
+    eye = staticmethod(eye)
+    full = staticmethod(full)
 
     # Utility functions
-    manual_seed = manual_seed
-    no_grad = no_grad
-    enable_grad = enable_grad
-    zeros_like = zeros_like
-    ones_like = ones_like
-    randn_like = randn_like
+    manual_seed = staticmethod(manual_seed)
+    no_grad = staticmethod(no_grad)
+    enable_grad = staticmethod(enable_grad)
+    zeros_like = staticmethod(zeros_like)
+    ones_like = staticmethod(ones_like)
+    randn_like = staticmethod(randn_like)
 
     # Tensor class
     Tensor = Tensor

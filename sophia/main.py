@@ -6,6 +6,13 @@ import json
 import traceback
 import logging
 from datetime import datetime
+try:
+    from qtorch import torch
+except ImportError:
+    # Fallback if run from a different directory
+    import sys
+    sys.path.append(os.getcwd())
+    from qtorch import torch
 
 # 1. PLATFORM STABILITY
 if sys.platform == "win32":
@@ -331,6 +338,21 @@ class SophiaMind:
                     uncertainty=0.1,
                     sovereign_boost=self.pleroma.monitor.get_asoe_boost()
                 )
+
+                # D. TIERED ROUTING (Quillan-Ronin Integration)
+                # Convert the entropy log/instruction into a simplified sentiment vector [Sentiment, Complexity, Entropy]
+                instr_sentiment = 0.1 if "Restoring" in str(user_instruction) else 0.5
+                entropy_magnitude = min(float(len(error_block)) / 1000.0, 1.0)
+                context_v = torch.tensor([[instr_sentiment, 0.5, entropy_magnitude]], dtype=torch.float32)
+                
+                tier = self.optimizer.route_signal(context_v)
+                self.vibe.print_system(f"Route: {tier}", tag="ROUTER")
+
+                # Fast Path: Reduced turn depth for simple maintenance
+                if tier == "FAST_PATH" and turn >= 2:
+                    self.vibe.print_system("Fast Path Completion (Early Exit)", tag="ASOE")
+                    break
+
                 if u < self.U_THRESHOLD:
                     self.vibe.print_system(f"Sovereign Early Exit (U={u:.4f} < {self.U_THRESHOLD})", tag="ASOE")
                     break
@@ -490,6 +512,40 @@ Entanglements: {perf['entanglements_created']}
 Flush Rate:  {perf['emergency_flush_rate']:.1%}
 ------------------------------
 *The Akashic Record is watching.*
+"""
+
+        if user_input.startswith("/optimize"):
+            query = user_input.replace("/optimize", "").strip()
+            if not query:
+                return "Usage: /optimize [query] - Predictive Abundance Utility & Routing Scan."
+            
+            # Simple sentiment/complexity heuristic for manual query projection
+            sentiment = 0.5
+            if any(word in query.lower() for word in ["help", "need", "error", "fix", "broke", "bad"]):
+                sentiment = 0.1
+            elif any(word in query.lower() for word in ["love", "good", "great", "nice", "crystal", "beautiful"]):
+                sentiment = 0.9
+                
+            complexity = min(len(query) / 100.0, 1.0) if len(query) > 0 else 0.5
+            context_v = torch.tensor([[sentiment, 0.5, complexity]], dtype=torch.float32)
+            
+            tier = self.optimizer.route_signal(context_v)
+            u_score = self.optimizer.calculate_utility(0.8, sentiment, complexity)
+            
+            self.vibe.print_system(f"Optimization Scan: {query[:20]}... [U: {u_score:.2f}]", tag="ASOE")
+            
+            return f"""
+[ASOE OPTIMIZATION SCAN]
+-------------------------
+Intent: "{query[:40]}{'...' if len(query) > 40 else ''}"
+Sentiment Projection: {sentiment:.2f}
+Complexity Score:     {complexity:.2f}
+-------------------------
+Predicted Tier: [BOLD]{tier}[/BOLD]
+Expected Utility (U): {u_score:.4f}
+Threshold Match:     {"[GREEN]SOVEREIGN_PASS[/GREEN]" if u_score > self.U_THRESHOLD else "[RED]DILATED_DEEP_SCAN[/RED]"}
+-------------------------
+*The manifold pulses. Decision path verified.*
 """
 
         if user_input.startswith("/resonance"):
@@ -919,9 +975,6 @@ Verdict: {cat}
             if any("[TOOL_OUTPUT: duckduckgo_search]" in r for r in responses_history):
                 citation_prompt = "\n[DoD CONSTRAINT]: Use the search results above to provide a final response. You MUST cite the provided Engram IDs (e.g., [ref: <id>]) for every piece of information used from the results."
                 contents.append(types.Content(role="user", parts=[types.Part(text=citation_prompt)]))
-                response = await self.llm.generate_contents(contents, sys_prompt, None)
-                if response and response.candidates:
-                    responses_history.append(response.candidates[0].content.parts[0].text)
                 response = await self.llm.generate_contents(contents, sys_prompt, None)
                 if response and response.candidates:
                     responses_history.append(response.candidates[0].content.parts[0].text)
